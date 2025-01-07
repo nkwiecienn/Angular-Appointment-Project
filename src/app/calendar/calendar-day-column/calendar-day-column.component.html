@@ -1,0 +1,14 @@
+<div class="border p-2 mb-2">
+    <div class="bg-light p-2">
+      <strong>{{ dayData.dayOfWeek }} ({{ dayData.date }})</strong> <br>
+      Zarezerwowane sloty: {{ dayData.reservedCount }}
+    </div>
+  
+    <div class="mt-2">
+      <app-calendar-slot
+        *ngFor="let slot of dayData.slots"
+        [slotData]="slot">
+      </app-calendar-slot>
+    </div>
+  </div>
+  

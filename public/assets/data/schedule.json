@@ -1,0 +1,40 @@
+{
+    "weekStart": "2025-01-06",
+    "days": [
+      {
+        "date": "2025-01-06",
+        "dayOfWeek": "Poniedziałek",
+        "reservedCount": 2,
+        "slots": [
+          {
+            "startTime": "08:00",
+            "endTime": "08:30",
+            "isReserved": true,
+            "isPast": false,
+            "type": "Ogólna",
+            "reservationDetails": "Pacjent: Jan Kowalski"
+          },
+          {
+            "startTime": "08:30",
+            "endTime": "09:00",
+            "isReserved": false,
+            "isPast": false
+          }
+        ]
+      },
+      {
+        "date": "2025-01-07",
+        "dayOfWeek": "Wtorek",
+        "reservedCount": 1,
+        "slots": [
+          {
+            "startTime": "08:00",
+            "endTime": "08:30",
+            "isReserved": false,
+            "isPast": false
+          }
+        ]
+      }
+    ]
+  }
+  
