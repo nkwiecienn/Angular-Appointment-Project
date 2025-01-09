@@ -1,0 +1,13 @@
+/* Gdy kolumna jest bieżącym dniem */
+.current-day {
+    background-color: #fef1d8; /* jasne tło */
+  }
+  
+  /* Gdy wiersz jest bieżącą godziną */
+  .current-time {
+    outline: 2px dashed red; /* czerwona ramka wokół tego wiersza w danej kolumnie */
+  }
+  
+  .available {
+    background-color: #d4edda; /* zielone tło */
+  }

@@ -1,40 +1,80 @@
 {
-    "weekStart": "2025-01-06",
-    "days": [
-      {
-        "date": "2025-01-06",
-        "dayOfWeek": "Poniedziałek",
-        "reservedCount": 2,
-        "slots": [
-          {
-            "startTime": "08:00",
-            "endTime": "08:30",
-            "isReserved": true,
-            "isPast": false,
-            "type": "Ogólna",
-            "reservationDetails": "Pacjent: Jan Kowalski"
-          },
-          {
-            "startTime": "08:30",
-            "endTime": "09:00",
-            "isReserved": false,
-            "isPast": false
-          }
-        ]
-      },
-      {
-        "date": "2025-01-07",
-        "dayOfWeek": "Wtorek",
-        "reservedCount": 1,
-        "slots": [
-          {
-            "startTime": "08:00",
-            "endTime": "08:30",
-            "isReserved": false,
-            "isPast": false
-          }
-        ]
-      }
-    ]
-  }
-  
+  "weekStart": "2025-01-06",
+  "days": [
+    {
+      "date": "2025-01-06",
+      "dayOfWeek": "Poniedziałek",
+      "reservedCount": 1,
+      "slots": [
+        {
+          "startTime": "10:00",
+          "endTime": "11:30",
+          "isReserved": true,
+          "isPast": true,
+          "type": "A",
+          "reservationDetails": "Konsultacja dietetyczna"
+        }
+      ]
+    },
+    {
+      "date": "2025-01-07",
+      "dayOfWeek": "Wtorek",
+      "reservedCount": 1,
+      "slots": [
+        {
+          "startTime": "09:30",
+          "endTime": "10:00",
+          "isReserved": true,
+          "isPast": true,
+          "type": "A",
+          "reservationDetails": "Terapia psychologiczna"
+        }
+      ]
+    },
+    {
+      "date": "2025-01-08",
+      "dayOfWeek": "Środa",
+      "reservedCount": 1,
+      "slots": [
+        {
+          "startTime": "11:00",
+          "endTime": "12:00",
+          "isReserved": false,
+          "isPast": false,
+          "type": "B",
+          "reservationDetails": ""
+        }
+      ]
+    },
+    {
+      "date": "2025-01-09",
+      "dayOfWeek": "Czwartek",
+      "reservedCount": 1,
+      "slots": [
+        {
+          "startTime": "10:00",
+          "endTime": "11:00",
+          "isReserved": false,
+          "isPast": false,
+          "type": "A",
+          "reservationDetails": ""
+        }
+      ]
+    },
+    {
+      "date": "2025-01-10",
+      "dayOfWeek": "Piątek",
+      "reservedCount": 1,
+      "slots": [
+        {
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "isReserved": false,
+          "isPast": false,
+          "type": "B",
+          "reservationDetails": ""
+        }
+      ]
+    }
+  ]
+}

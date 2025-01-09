@@ -1,0 +1,30 @@
+<h2>Definiowanie dostępności lekarza</h2>
+
+<!-- Linki do innych widoków -->
+<button routerLink="/availability/single-day">Jednodniowa</button>
+<button routerLink="/availability/range">Zakres dat</button>
+
+<hr>
+<h3>Zdefiniowane dostępności:</h3>
+<ul>
+  <li *ngFor="let a of availabilities">
+    <strong>ID:</strong> {{ a.id }} <br>
+    <strong>Typ:</strong> {{ a.type }} <br>
+
+    <span *ngIf="a.type === 'single-day'">
+      Dzień: {{ a.day }}
+    </span>
+    <span *ngIf="a.type === 'range'">
+      Zakres: {{ a.dateFrom }} - {{ a.dateTo }} <br>
+      Dni tygodnia: {{ a.daysOfWeek }}
+    </span>
+
+    <br>
+    Godziny:
+    <span *ngFor="let t of a.timeRanges">
+      {{ t.start }}-{{ t.end }}; 
+    </span>
+
+    <hr>
+  </li>
+</ul>

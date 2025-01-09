@@ -1,16 +1,54 @@
+<!-- src/app/calendar/calendar-view/calendar-view.component.html -->
+
 <div class="container">
-    <h2>Kalendarz</h2>
-    <p>Tydzień: {{ currentWeekLabel }}</p>
-  
-    <div class="d-flex gap-2 mb-3">
-      <button class="btn btn-primary" (click)="goToPreviousWeek()">Poprzedni tydzień</button>
-      <button class="btn btn-primary" (click)="goToNextWeek()">Następny tydzień</button>
-    </div>
-  
-    <div class="row">
-      <div class="col" *ngFor="let day of weekDays">
-        <app-calendar-day-column [dayData]="day"></app-calendar-day-column>
-      </div>
-    </div>
+
+  <h2>Kalendarz Rezerwacji</h2>
+
+  <div class="d-flex justify-content-between">
+    <!-- Przewijanie tygodni -->
+    <button class="btn btn-outline-primary" (click)="goToPreviousWeek()">← Poprzedni tydzień</button>
+    <button class="btn btn-outline-primary" (click)="goToNextWeek()">Następny tydzień →</button>
   </div>
-  
+
+  <!-- Tabela 7 kolumn (dni) x N wierszy (sloty) -->
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Godzina</th>
+        <th 
+          *ngFor="let day of weekDays" 
+          [class.current-day]="isCurrentDay(day)"
+        >
+          {{ day.dayOfWeek }} <br> ({{ day.date }})
+
+          <br>
+          <span>Rezerwacje: {{ day.reservedCount }}</span>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let slotIndex of slotIndexes">
+        <!-- Etykieta czasu -->
+        <td>{{ displaySlotLabel(slotIndex) }}</td>
+        <!-- 7 kolumn (dni) -->
+        <td
+          *ngFor="let day of weekDays"
+          [class.current-day]="isCurrentDay(day)"
+          [class.current-time]="isCurrentTime(slotIndex, day)"
+          [class.available]="isAvailable(slotIndex, day)"
+        >
+          <ng-container *ngIf="day.slots[slotIndex] as slot">
+            <!-- Komponent blokowy -->
+            <app-calendar-slot-block [slot]="slot"></app-calendar-slot-block>
+          </ng-container>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="d-flex justify-content-between">
+    <button class="btn btn-outline-secondary ms-3" (click)="goToPreviousHours()">← Godziny</button>
+    <button class="btn btn-outline-secondary" (click)="goToNextHours()">Godziny →</button>
+  </div>
+
+</div>

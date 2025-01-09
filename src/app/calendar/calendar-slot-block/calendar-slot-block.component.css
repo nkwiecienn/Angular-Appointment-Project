@@ -1,0 +1,47 @@
+.slot-block {
+  position: relative;
+  width: 100%;
+  min-height: 30px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  cursor: pointer;
+  padding: 2px;
+}
+
+/* slot niezarezerwowany */
+.free-slot {
+  background-color: #fafafa;
+}
+
+/* slot zarezerwowany, brak "type" */
+.reserved-default {
+  background-color: #aaa;
+}
+
+/* zarezerwowany, typ = "a" */
+.reserved-a {
+  background-color: #4caf50;  /* zielony */
+}
+
+/* zarezerwowany, typ = "b" */
+.reserved-b {
+  background-color: #2196f3;  /* niebieski */
+}
+
+/* slot z przeszłości (i zarezerwowany) */
+.past-block {
+  background-color: #cfcfcf !important;
+  color: #666;
+}
+
+/* tooltip */
+.slot-tooltip {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: #fff;
+  border: 1px solid #888;
+  width: 150px;
+  padding: 5px;
+  z-index: 999;
+}
