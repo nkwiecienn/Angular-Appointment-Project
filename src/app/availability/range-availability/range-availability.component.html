@@ -1,31 +1,36 @@
-<h3>Dostępność w przedziale dat</h3>
 <form [formGroup]="form">
-  <label>Data od:</label>
-  <input type="date" formControlName="dateFrom">
-
-  <label>Data do:</label>
-  <input type="date" formControlName="dateTo">
-
-  <hr>
-  <label>Dni tygodnia:</label>
-  <div formArrayName="daysOfWeek">
-    <div *ngFor="let opt of daysOfWeekOptions; index as i">
-      <input type="checkbox" [formControl]="getDayOfWeekControl(i)">
-      {{ opt.label }}
+  <div class="mb-3">
+    <label class="form-label">Data od:</label>
+    <input type="date" class="form-control" formControlName="dateFrom">
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Data do:</label>
+    <input type="date" class="form-control" formControlName="dateTo">
+  </div>
+  
+  <div class="mb-3">
+    <label class="form-label">Dni tygodnia:</label>
+    <div class="form-check" formArrayName="daysOfWeek" *ngFor="let opt of daysOfWeekOptions; index as i">
+      <input type="checkbox" class="form-check-input" [formControl]="getDayOfWeekControl(i)">
+      <label class="form-check-label">{{ opt.label }}</label>
     </div>
   </div>
 
-  <hr>
   <div formArrayName="timeRanges">
-    <div *ngFor="let ctrl of timeRangesArray.controls; index as i" [formGroupName]="i">
-      <label>Przedział:</label>
-      <input type="time" formControlName="start">
-      <input type="time" formControlName="end">
-      <button (click)="removeTimeRange(i)">Usuń</button>
+    <div class="mb-3" *ngFor="let ctrl of timeRangesArray.controls; index as i" [formGroupName]="i">
+      <label class="form-label">Przedział:</label>
+      <div class="input-group">
+        <input type="time" class="form-control" formControlName="start">
+        <input type="time" class="form-control" formControlName="end">
+        <button class="btn btn-danger" (click)="removeTimeRange(i)">Usuń</button>
+      </div>
     </div>
   </div>
-  <button (click)="addTimeRange()">Dodaj przedział</button>
+  <div class="row">
+    <button class="btn btn-secondary mb-3" (click)="addTimeRange()">Dodaj przedział</button>
+  </div>
 
-  <br><br>
-  <button (click)="save()" [disabled]="form.invalid">Zapisz</button>
+  <div class="row">
+    <button class="btn btn-primary" (click)="save()" [disabled]="form.invalid">Zapisz</button>
+  </div>
 </form>

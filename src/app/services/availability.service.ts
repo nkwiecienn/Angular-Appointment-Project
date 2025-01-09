@@ -1,45 +1,35 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, of, map } from 'rxjs';
 import { Availability } from '../availability/models/availability';
+import { HttpClient } from '@angular/common/http';
+import { Observable, BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AvailabilityService {
   private availabilityUrl = 'assets/data/availability.json';
+  private availabilities$: BehaviorSubject<Availability[]> = new BehaviorSubject<Availability[]>([]);
 
-  private availabilities: Availability[] = [];
-
-  // constructor(private http: HttpClient) {}
   constructor(private http: HttpClient) {
-    // Automatyczne ładowanie dostępności na starcie
-    this.loadAvailabilities().subscribe();
+    this.loadAvailabilities();
   }
 
-  loadAvailabilities(): Observable<Availability[]> {
-    if (this.availabilities.length > 0) {
-      return of(this.availabilities);
-    }
-    return this.http
-      .get<{ availabilities: Availability[] }>(this.availabilityUrl)
-      .pipe(
-        map(data => {
-          this.availabilities = data.availabilities || [];
-          return this.availabilities;
-        })
-      );
+  private loadAvailabilities(): void {
+    this.http.get<{ availabilities: Availability[] }>(this.availabilityUrl).subscribe((data) => {
+      this.availabilities$.next(data.availabilities || []);
+    });
   }
 
-  getAvailabilities(): Availability[] {
-    return this.availabilities;
+  getAvailabilities(): Observable<Availability[]> {
+    return this.availabilities$.asObservable();
   }
 
-  addAvailability(newAvail: Availability): void {
-    const maxId = this.availabilities.length > 0 
-      ? Math.max(...this.availabilities.map(a => a.id)) 
+  addAvailability(newAvailability: Availability): void {
+    const currentAvailabilities = this.availabilities$.getValue();
+    const maxId = currentAvailabilities.length > 0
+      ? Math.max(...currentAvailabilities.map(a => a.id))
       : 0;
-    newAvail.id = maxId + 1;
-    this.availabilities.push(newAvail);
+    newAvailability.id = maxId + 1;
+    this.availabilities$.next([...currentAvailabilities, newAvailability]);
   }
 }

@@ -1,0 +1,16 @@
+<h3>Dodaj absencję</h3>
+<form [formGroup]="form">
+  <label>Dzień:</label>
+  <input type="date" formControlName="day" class="form-control mb-3">
+
+  <button class="btn btn-primary" (click)="save()" [disabled]="form.invalid">Zapisz</button>
+</form>
+
+<hr>
+
+<h3>Obecne absencje:</h3>
+<ul class="list-group">
+  <li class="list-group-item" *ngFor="let absence of (absences$ | async)">
+    {{ absence.day }}
+  </li>
+</ul>

@@ -11,3 +11,7 @@
   .available {
     background-color: #d4edda; /* zielone tło */
   }
+
+  .absent {
+    background-color: #f8d7da !important; /* czerwone tło */
+  }

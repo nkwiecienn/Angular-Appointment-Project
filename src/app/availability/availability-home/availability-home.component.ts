@@ -1,24 +1,30 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-
+import { RangeAvailabilityComponent } from '../range-availability/range-availability.component';
+import { SingleDayAvailabilityComponent } from '../single-day-availability/single-day-availability.component';
 import { AvailabilityService } from '../../services/availability.service';
 import { Availability } from '../models/availability';
+import { Observable } from 'rxjs';
 
 @Component({
   standalone: true,
   selector: 'app-availability-home',
-  imports: [CommonModule, RouterModule],
-  templateUrl: './availability-home.component.html'
+  imports: [
+    CommonModule,
+    RangeAvailabilityComponent,
+    SingleDayAvailabilityComponent
+  ],
+  templateUrl: './availability-home.component.html',
+  styleUrls: ['./availability-home.component.css']
 })
 export class AvailabilityHomeComponent implements OnInit {
-  availabilities: Availability[] = [];
+  availabilities$: Observable<Availability[]>;
 
-  constructor(private availabilityService: AvailabilityService) {}
+  constructor(private availabilityService: AvailabilityService) {
+    this.availabilities$ = this.availabilityService.getAvailabilities();
+  }
 
   ngOnInit(): void {
-    this.availabilityService.loadAvailabilities().subscribe(avails => {
-      this.availabilities = avails;
-    });
+    // Nic więcej do inicjalizacji, Observable automatycznie zaktualizuje dane
   }
 }

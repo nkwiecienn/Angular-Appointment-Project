@@ -33,6 +33,7 @@
         <!-- 7 kolumn (dni) -->
         <td
           *ngFor="let day of weekDays"
+          [class.absent]="isAbsent(day)"
           [class.current-day]="isCurrentDay(day)"
           [class.current-time]="isCurrentTime(slotIndex, day)"
           [class.available]="isAvailable(slotIndex, day)"

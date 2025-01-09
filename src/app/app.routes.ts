@@ -1,30 +1,22 @@
 import { Routes } from '@angular/router';
 import { CalendarViewComponent } from './calendar/calendar-view/calendar-view.component';
+import { AvailabilityHomeComponent } from './availability/availability-home/availability-home.component';
+import { AbsenceComponent } from './absence/absence.component'; // Import komponentu bez lazy loadingu
 
 export const routes: Routes = [
   {
     path: 'availability',
-    // lazy loading => loadComponent
-    loadComponent: () =>
-      import('./availability/availability-home/availability-home.component')
-        .then(m => m.AvailabilityHomeComponent)
+    component: AvailabilityHomeComponent // Bez lazy loadingu
   },
   {
-    path: 'availability/single-day',
-    loadComponent: () =>
-      import('./availability/single-day-availability/single-day-availability.component')
-        .then(m => m.SingleDayAvailabilityComponent)
+    path: 'absence',
+    component: AbsenceComponent // Bez lazy loadingu
   },
   {
-    path: 'availability/range',
-    loadComponent: () =>
-      import('./availability/range-availability/range-availability.component')
-        .then(m => m.RangeAvailabilityComponent)
+    path: 'calendar',
+    component: CalendarViewComponent // Bez lazy loadingu
   },
-  { path: 'calendar', 
-    loadComponent: () => 
-      import('./calendar/calendar-view/calendar-view.component')
-        .then(m => m.CalendarViewComponent) },
-  { path: '', redirectTo: 'calendar', pathMatch: 'full' },
-  { path: 'calendar', component: CalendarViewComponent }
+  {
+    path: '', redirectTo: 'calendar', pathMatch: 'full' // Domyślne przekierowanie na /calendar
+  }
 ];

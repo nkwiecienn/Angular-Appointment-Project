@@ -1,30 +1,51 @@
-<h2>Definiowanie dostępności lekarza</h2>
+<div class="container mt-4">
+  <h2 class="mb-4 text-center">Definiowanie dostępności lekarza</h2>
 
-<!-- Linki do innych widoków -->
-<button routerLink="/availability/single-day">Jednodniowa</button>
-<button routerLink="/availability/range">Zakres dat</button>
+  <!-- Formularze dostępności -->
+  <div class="row">
+    <div class="col-md-6">
+      <div class="card shadow mb-4">
+        <div class="card-header bg-primary text-white">
+          Dostępność w przedziale dat
+        </div>
+        <div class="card-body">
+          <app-range-availability></app-range-availability>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card shadow mb-4">
+        <div class="card-header bg-success text-white">
+          Dostępność w konkretnym dniu
+        </div>
+        <div class="card-body">
+          <app-single-day-availability></app-single-day-availability>
+        </div>
+      </div>
+    </div>
+  </div>
 
-<hr>
-<h3>Zdefiniowane dostępności:</h3>
-<ul>
-  <li *ngFor="let a of availabilities">
-    <strong>ID:</strong> {{ a.id }} <br>
-    <strong>Typ:</strong> {{ a.type }} <br>
+  <!-- Lista zdefiniowanych dostępności -->
+  <hr>
+  <h3>Zdefiniowane dostępności:</h3>
+  <ul class="list-group">
+    <li class="list-group-item" *ngFor="let availability of (availabilities$ | async)">
+      <strong>ID:</strong> {{ availability.id }} <br>
+      <strong>Typ:</strong> {{ availability.type }} <br>
 
-    <span *ngIf="a.type === 'single-day'">
-      Dzień: {{ a.day }}
-    </span>
-    <span *ngIf="a.type === 'range'">
-      Zakres: {{ a.dateFrom }} - {{ a.dateTo }} <br>
-      Dni tygodnia: {{ a.daysOfWeek }}
-    </span>
+      <span *ngIf="availability.type === 'single-day'">
+        Dzień: {{ availability.day }}
+      </span>
+      <span *ngIf="availability.type === 'range'">
+        Zakres: {{ availability.dateFrom }} - {{ availability.dateTo }} <br>
+        Dni tygodnia: {{ availability.daysOfWeek }}
+      </span>
 
-    <br>
-    Godziny:
-    <span *ngFor="let t of a.timeRanges">
-      {{ t.start }}-{{ t.end }}; 
-    </span>
-
-    <hr>
-  </li>
-</ul>
+      <br>
+      Godziny:
+      <span *ngFor="let t of availability.timeRanges">
+        {{ t.start }}-{{ t.end }}; 
+      </span>
+    </li>
+  </ul>
+</div>

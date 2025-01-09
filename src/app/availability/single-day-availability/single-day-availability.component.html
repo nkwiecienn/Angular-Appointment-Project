@@ -1,19 +1,23 @@
-<h3>Dostępność w konkretnym dniu</h3>
 <form [formGroup]="form">
-  <label>Dzień: </label>
-  <input type="date" formControlName="day" />
-
-  <hr>
+  <div class="mb-3">
+    <label class="form-label">Dzień:</label>
+    <input type="date" class="form-control" formControlName="day">
+  </div>
+  
   <div formArrayName="timeRanges">
-    <div *ngFor="let tr of timeRangesArray.controls; index as i" [formGroupName]="i">
-      <label>Przedział godzin: </label>
-      <input type="time" formControlName="start" />
-      <input type="time" formControlName="end" />
-      <button (click)="removeTimeRange(i)">Usuń</button>
+    <div class="mb-3" *ngFor="let tr of timeRangesArray.controls; index as i" [formGroupName]="i">
+      <label class="form-label">Przedział godzin:</label>
+      <div class="input-group">
+        <input type="time" class="form-control" formControlName="start">
+        <input type="time" class="form-control" formControlName="end">
+        <button class="btn btn-danger" (click)="removeTimeRange(i)">Usuń</button>
+      </div>
     </div>
   </div>
-  <button (click)="addTimeRange()">Dodaj przedział</button>
-
-  <br><br>
-  <button (click)="save()" [disabled]="form.invalid">Zapisz</button>
+  <div class="row">
+    <button class="btn btn-secondary mb-3" (click)="addTimeRange()">Dodaj przedział</button>
+  </div>
+  <div class="row">
+    <button class="btn btn-success" (click)="save()" [disabled]="form.invalid">Zapisz</button>
+  </div>
 </form>

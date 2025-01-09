@@ -13,7 +13,7 @@ import { Availability } from '../models/availability';
 })
 export class RangeAvailabilityComponent {
   form: FormGroup;
-
+ 
   daysOfWeekOptions = [
     { label: 'Poniedziałek', value: 1 },
     { label: 'Wtorek', value: 2 },

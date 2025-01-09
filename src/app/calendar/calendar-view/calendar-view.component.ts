@@ -6,6 +6,8 @@ import { CalendarSlotBlockComponent } from '../calendar-slot-block/calendar-slot
 import { AvailabilityService } from '../../services/availability.service';
 import { Availability } from '../../availability/models/availability';
 import { RouterModule } from '@angular/router';
+import { AbsenceService } from '../../services/absence.service';
+import { Absence } from '../../absence/models/absence';
 
 interface GeneratedSlot {
   startTime: string;
@@ -31,6 +33,8 @@ interface GeneratedSlot {
 export class CalendarViewComponent implements OnInit {
   startOfWeek: Date = new Date();
   weekDays: DaySchedule[] = [];
+  allAvailabilities: Availability[] = [];
+  absences: Absence[] = [];
 
   startHour = 8;
   numHours = 6;
@@ -43,12 +47,26 @@ export class CalendarViewComponent implements OnInit {
 
   constructor(
     private calendarService: CalendarService,
-    private availabilityService: AvailabilityService
+    private availabilityService: AvailabilityService,
+    private absenceService: AbsenceService
   ) {}
 
   ngOnInit(): void {
     this.todayStr = new Date().toISOString().split('T')[0];
     this.startOfWeek = getMondayOf(new Date());
+
+    this.availabilityService.getAvailabilities().subscribe((availabilities) => {
+      this.allAvailabilities = availabilities;
+
+      // Pętla działa poprawnie na załadowanych danych
+      for (const avail of this.allAvailabilities) {
+        console.log(avail);
+      }
+    });
+
+    this.absenceService.getAbsences().subscribe((absences) => {
+      this.absences = absences;
+    });
 
     this.loadSchedule();
   }
@@ -173,10 +191,9 @@ export class CalendarViewComponent implements OnInit {
     // (niedziela=0, pon=1, ...)
 
     // 3) Pobierz definicje dostępności z serwisu
-    const allAvailabilities = this.availabilityService.getAvailabilities();
+    //const allAvailabilities = this.availabilityService.getAvailabilities();
 
-    // 4) Sprawdź, czy KTÓRAŚ definicja pokrywa (day + slotStart/slotEnd)
-    for (const avail of allAvailabilities) {
+    for (const avail of this.allAvailabilities) {
       if (avail.type === 'single-day') {
         // -> sprawdzamy, czy day.date == avail.day
         if (avail.day === day.date) {
@@ -202,6 +219,10 @@ export class CalendarViewComponent implements OnInit {
 
     // 5) Jeśli żadna definicja nie pokrywa
     return false;
+  }
+
+  isAbsent(day: DaySchedule): boolean {
+    return this.absences.some(absence => absence.day === day.date);
   }
 }
 
