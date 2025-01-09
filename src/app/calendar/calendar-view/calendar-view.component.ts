@@ -8,6 +8,7 @@ import { Availability } from '../../availability/models/availability';
 import { RouterModule } from '@angular/router';
 import { AbsenceService } from '../../services/absence.service';
 import { Absence } from '../../absence/models/absence';
+import { ReservationComponent } from '../../reservation/reservation.component';
 
 interface GeneratedSlot {
   startTime: string;
@@ -23,7 +24,8 @@ interface GeneratedSlot {
   imports: [
     CommonModule,
     RouterModule,
-    CalendarSlotBlockComponent
+    CalendarSlotBlockComponent,
+    ReservationComponent
   ],
   selector: 'app-calendar-view',
   templateUrl: './calendar-view.component.html',
@@ -224,6 +226,50 @@ export class CalendarViewComponent implements OnInit {
   isAbsent(day: DaySchedule): boolean {
     return this.absences.some(absence => absence.day === day.date);
   }
+
+  //----------------------- Form -----------------------
+
+  public isSlotClickable(slotIndex: number, day: DaySchedule): boolean {
+    const slot = day.slots[slotIndex]; // Pobierz slot według indeksu
+    return slot && !slot.isReserved && !slot.isPast && this.isAvailable(slotIndex, day) && !this.isAbsent(day);
+  }
+
+  private publicAreSlotsAvailable(slotIndex: number, day: DaySchedule, length: number = 30): boolean {
+    const slotsRequired = Math.ceil(length / 30);
+
+    for (let i = 0; i < slotsRequired; i++) {
+      const currentSlotIndex = slotIndex + i;
+      const slot = day.slots[currentSlotIndex];
+
+      if (!slot || slot.isReserved || !this.isAvailable(currentSlotIndex, day) || this.isAbsent(day)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  selectedSlot: { date: string, startTime: string } | null = null;
+  currentSlotIndexDay: { slotIndex: number, day: DaySchedule } | null = null;
+
+  onSlotClick(slotIndex: number, day: DaySchedule): void {
+    if (this.isSlotClickable(slotIndex, day)) {
+      this.selectedSlot = { date: day.date, startTime: this.displaySlotLabel(slotIndex) };
+      this.currentSlotIndexDay = { slotIndex, day };
+    }
+  }
+
+  areSlotsAvailable(length: number): boolean {
+    if(this.currentSlotIndexDay?.slotIndex == null) return false;
+    if(this.currentSlotIndexDay?.day == null) return false;
+
+    return this.publicAreSlotsAvailable(this.currentSlotIndexDay.slotIndex, this.currentSlotIndexDay.day, length);
+  }
+
+  closeReservationForm(): void {
+    this.selectedSlot = null;
+  }
+
 }
 
 function getMondayOf(date: Date): Date {

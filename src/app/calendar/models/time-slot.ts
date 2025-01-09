@@ -1,8 +1,8 @@
 export interface TimeSlot {
-  startTime: string;   // '08:00'
-  endTime: string;     // '08:30'
+  startTime: string;
+  endTime: string;
   isReserved: boolean;
   isPast: boolean;
-  type?: string;       // rodzaj konsultacji (np. 'A', 'B' albo 'Diet', 'Psych' itp.)
+  type?: string;
   reservationDetails?: string;
 }

@@ -2,13 +2,15 @@
 
 <div class="container">
 
-  <h2>Kalendarz Rezerwacji</h2>
+  <h2 class="text-center">Kalendarz Rezerwacji</h2>
 
   <div class="d-flex justify-content-between">
     <!-- Przewijanie tygodni -->
-    <button class="btn btn-outline-primary" (click)="goToPreviousWeek()">← Poprzedni tydzień</button>
+    <button class="btn btn-outline-primary ms-3" (click)="goToPreviousWeek()">← Poprzedni tydzień</button>
     <button class="btn btn-outline-primary" (click)="goToNextWeek()">Następny tydzień →</button>
   </div>
+  
+  <br>
 
   <!-- Tabela 7 kolumn (dni) x N wierszy (sloty) -->
   <table class="table table-bordered">
@@ -37,6 +39,8 @@
           [class.current-day]="isCurrentDay(day)"
           [class.current-time]="isCurrentTime(slotIndex, day)"
           [class.available]="isAvailable(slotIndex, day)"
+          [class.clickable]="isSlotClickable(slotIndex, day)"
+          (click)="onSlotClick(slotIndex, day)"
         >
           <ng-container *ngIf="day.slots[slotIndex] as slot">
             <!-- Komponent blokowy -->
@@ -50,6 +54,15 @@
   <div class="d-flex justify-content-between">
     <button class="btn btn-outline-secondary ms-3" (click)="goToPreviousHours()">← Godziny</button>
     <button class="btn btn-outline-secondary" (click)="goToNextHours()">Godziny →</button>
+  </div>
+
+  <div *ngIf="selectedSlot" class="reservation-form-overlay">
+    <app-reservation
+      [date]="selectedSlot.date"
+      [startTime]="selectedSlot.startTime"
+      [validateSlots]="areSlotsAvailable.bind(this)"
+      (close)="closeReservationForm()"
+    ></app-reservation>
   </div>
 
 </div>

@@ -1,0 +1,50 @@
+<h3>Rezerwacja</h3>
+<form [formGroup]="form">
+
+  <div *ngIf="!slotsAvailable" class="alert alert-danger">
+    Nie wszystkie wymagane sloty są dostępne dla wybranej długości rezerwacji.
+  </div>
+
+  <div class="mb-3">
+    <label>Długość (minuty):</label>
+    <input type="number" formControlName="length" class="form-control">
+  </div>
+  <div class="mb-3">
+    <label>Typ:</label>
+    <select formControlName="type" class="form-select">
+      <option value="konsultacja">Konsultacja</option>
+      <option value="badanie">Badanie</option>
+      <option value="wizyta kontrolna">Wizyta kontrolna</option>
+      <option value="recepta">Recepta</option>
+      <option value="inny">Inny</option>
+    </select>
+  </div>
+  <div class="mb-3">
+    <label>Imię:</label>
+    <input type="text" formControlName="patientName" class="form-control">
+  </div>
+  <div class="mb-3">
+    <label>Nazwisko:</label>
+    <input type="text" formControlName="patientSurname" class="form-control">
+  </div>
+  <div class="mb-3">
+    <label>Płeć:</label>
+    <select formControlName="gender" class="form-select">
+      <option value="kobieta">Kobieta</option>
+      <option value="mężczyzna">Mężczyzna</option>
+      <option value="inny">Inny</option>
+    </select>
+  </div>
+  <div class="mb-3">
+    <label>Wiek:</label>
+    <input type="number" formControlName="age" class="form-control">
+  </div>
+  <div class="mb-3">
+    <label>Szczegóły:</label>
+    <textarea formControlName="details" class="form-control"></textarea>
+  </div>
+  <div class="d-flex justify-content-between">
+      <button (click)="save()" class="btn btn-primary" [disabled]="form.invalid">Dodaj do koszyka</button>
+      <button (click)="cancel()" class="btn btn-secondary">Anuluj</button>
+  </div> 
+</form>
