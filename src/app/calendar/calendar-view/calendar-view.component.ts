@@ -9,14 +9,17 @@ import { RouterModule } from '@angular/router';
 import { AbsenceService } from '../../services/absence.service';
 import { Absence } from '../../absence/models/absence';
 import { ReservationComponent } from '../../reservation/reservation.component';
+import { SlotService } from '../../services/slot.service';
+import { ReservationService } from '../../services/reservation.service';
+import { Reservation } from '../../reservation/models/reservation';
 
 interface GeneratedSlot {
+  date: string;
   startTime: string;
   endTime: string;
   isReserved: boolean;
   isPast: boolean;
-  type?: string;
-  reservationDetails?: string;
+  reservationId?: number;
 }
 
 @Component({
@@ -37,6 +40,7 @@ export class CalendarViewComponent implements OnInit {
   weekDays: DaySchedule[] = [];
   allAvailabilities: Availability[] = [];
   absences: Absence[] = [];
+  reservations: Reservation[] = [];
 
   startHour = 8;
   numHours = 6;
@@ -50,85 +54,81 @@ export class CalendarViewComponent implements OnInit {
   constructor(
     private calendarService: CalendarService,
     private availabilityService: AvailabilityService,
-    private absenceService: AbsenceService
+    private absenceService: AbsenceService,
+    private slotService: SlotService,
+    private reservationService: ReservationService
   ) {}
 
   ngOnInit(): void {
     this.todayStr = new Date().toISOString().split('T')[0];
     this.startOfWeek = getMondayOf(new Date());
 
+    // Ładowanie dostępności
     this.availabilityService.getAvailabilities().subscribe((availabilities) => {
       this.allAvailabilities = availabilities;
-
-      // Pętla działa poprawnie na załadowanych danych
-      for (const avail of this.allAvailabilities) {
-        console.log(avail);
-      }
     });
-
+  
+    // Ładowanie nieobecności
     this.absenceService.getAbsences().subscribe((absences) => {
       this.absences = absences;
     });
 
-    this.loadSchedule();
-  }
-
-  loadSchedule(): void {
-    this.calendarService.getSchedule().subscribe(data => {
-      this.allDaysFromJson = data.days || [];
+    this.reservationService.getReservations().subscribe((reservations) => {
+      this.reservations = reservations;
+    });
+  
+    // Ładowanie slotów
+    this.slotService.loadSlots().subscribe((slots) => {
+      this.slotService.initializeSlots(slots);
       this.loadWeekData();
     });
   }
-
+  
 
   loadWeekData(): void {
     this.weekDays = generateWeekDays(this.startOfWeek, this.allDaysFromJson);
-
+  
     const totalSlots = (this.numHours * 60) / this.slotLength; 
     this.slotIndexes = Array.from({ length: totalSlots }, (_, i) => i);
-
+  
     this.weekDays.forEach(day => {
-      const dateObj = parseDate(day.date);
-
+      const slotsForDay = this.slotService.getSlotsForDate(day.date); // Pobranie zarezerwowanych slotów z serwisu
       const generatedSlots: GeneratedSlot[] = [];
+  
       for (let i = 0; i < totalSlots; i++) {
         const slotStartMinutes = (this.startHour * 60) + (i * this.slotLength);
         const slotEndMinutes = slotStartMinutes + this.slotLength;
-
+  
         const slotStartStr = formatHHMM(slotStartMinutes); 
         const slotEndStr   = formatHHMM(slotEndMinutes);
-
-        const slot: GeneratedSlot = {
-          startTime: slotStartStr, 
-          endTime: slotEndStr,
-          isReserved: false,
-          isPast: false
-        };
-
-        const slotDateTime = new Date(
-          dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate(),
-          parseInt(slotStartStr.split(':')[0], 10),
-          parseInt(slotStartStr.split(':')[1], 10)
+  
+        // Znajdź odpowiadający zarezerwowany slot
+        const reservedSlot = slotsForDay.find(slot =>
+          slot.startTime === slotStartStr && slot.endTime === slotEndStr
         );
-        if (slotDateTime < new Date()) {
-          slot.isPast = true;
-        }
-
-        for (const res of day.slots) {
-          if (isSlotInReservation(slotStartStr, slotEndStr, res.startTime, res.endTime)) {
-            slot.isReserved = true;
-            slot.type = res.type;
-            slot.reservationDetails = res.reservationDetails;
-          }
-        }
-
+  
+        // Jeśli slot jest zarezerwowany, ustaw dane rezerwacji, w przeciwnym razie utwórz pusty slot
+        const slot: GeneratedSlot = reservedSlot
+          ? {
+              ...reservedSlot,
+              isPast: new Date(day.date + 'T' + slotStartStr) < new Date(), // Ustawienie `isPast` dla zarezerwowanego slotu
+            }
+          : {
+              date: day.date,
+              startTime: slotStartStr,
+              endTime: slotEndStr,
+              isReserved: false,
+              isPast: new Date(day.date + 'T' + slotStartStr) < new Date(), // Ustawienie `isPast` dla pustego slotu
+            };
+  
         generatedSlots.push(slot);
       }
-
+  
       day.slots = generatedSlots;
       day.reservedCount = generatedSlots.filter(s => s.isReserved).length;
     });
   }
+  
 
   goToPreviousWeek() {
     this.startOfWeek.setDate(this.startOfWeek.getDate() - 7);
@@ -178,39 +178,28 @@ export class CalendarViewComponent implements OnInit {
    //---------------------  Availability ---------------------
 
    public isAvailable(slotIndex: number, day: DaySchedule): boolean {
-    // 1) Wyznacz godziny start/end slotu
+
     const slotStartMinutes = this.startHour * 60 + (slotIndex * this.slotLength);
     const slotEndMinutes   = slotStartMinutes + this.slotLength;
 
-    const slotStartStr = formatHHMM(slotStartMinutes); // np. "08:00"
-    const slotEndStr   = formatHHMM(slotEndMinutes);   // np. "08:30"
+    const slotStartStr = formatHHMM(slotStartMinutes);
+    const slotEndStr   = formatHHMM(slotEndMinutes);
 
-    // 2) Zamień day.date (np. "2025-01-06") na Date, 
-    //    by sprawdzić dayOfWeek czy dateFrom <= date <= dateTo itp.
     const [yyyy, mm, dd] = day.date.split('-').map(Number);
     const dayDate = new Date(yyyy, mm - 1, dd);
     const dayOfWeek = dayDate.getDay(); 
-    // (niedziela=0, pon=1, ...)
-
-    // 3) Pobierz definicje dostępności z serwisu
-    //const allAvailabilities = this.availabilityService.getAvailabilities();
 
     for (const avail of this.allAvailabilities) {
       if (avail.type === 'single-day') {
-        // -> sprawdzamy, czy day.date == avail.day
         if (avail.day === day.date) {
-          // -> sprawdź timeRanges
           if (anyTimeRangeCovers(slotStartStr, slotEndStr, avail.timeRanges)) {
-            return true; // znaleźliśmy definicję, która pokrywa ten slot
+            return true;
           }
         }
       }
       else if (avail.type === 'range') {
-        // -> sprawdzamy, czy dayDate mieści się w [dateFrom, dateTo]
         if (isDateInRange(day.date, avail.dateFrom!, avail.dateTo!)) {
-          // -> sprawdzamy, czy dayOfWeek jest w avail.daysOfWeek
           if (avail.daysOfWeek && avail.daysOfWeek.includes(dayOfWeek)) {
-            // -> sprawdzamy, czy slot pokrywa się z którymś z timeRanges
             if (anyTimeRangeCovers(slotStartStr, slotEndStr, avail.timeRanges)) {
               return true;
             }
@@ -219,7 +208,6 @@ export class CalendarViewComponent implements OnInit {
       }
     }
 
-    // 5) Jeśli żadna definicja nie pokrywa
     return false;
   }
 
@@ -230,7 +218,7 @@ export class CalendarViewComponent implements OnInit {
   //----------------------- Form -----------------------
 
   public isSlotClickable(slotIndex: number, day: DaySchedule): boolean {
-    const slot = day.slots[slotIndex]; // Pobierz slot według indeksu
+    const slot = day.slots[slotIndex];
     return slot && !slot.isReserved && !slot.isPast && this.isAvailable(slotIndex, day) && !this.isAbsent(day);
   }
 
@@ -370,7 +358,7 @@ function isSlotInRange(
   const sE = hhmmToMinutes(slotE);
   const rS = hhmmToMinutes(rangeS);
   const rE = hhmmToMinutes(rangeE);
-  // Zakładamy, że "mieści się" = slotS >= rangeS i slotE <= rangeE
+
   return (sS >= rS && sE <= rE);
 }
 

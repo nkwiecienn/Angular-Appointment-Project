@@ -4,5 +4,4 @@
 - po kupieniu updatuje się TimeSlot (i reserved na true)
 - jak najeżdża się na timeslot to są dane z rezerwacji
 - jak kliknie się to można anulować
-- dodać wszędzie ClientId/DoctorId
 - po dodaniu absencji jeżeli jest tam rezerwacja to jest ona zmieniana na odwołaną

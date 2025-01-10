@@ -4,16 +4,13 @@
   (mouseenter)="onMouseEnter()"
   (mouseleave)="onMouseLeave()"
 >
-  <!-- Może małe info o czasie w rogu -->
   <small>{{ slot.startTime }} - {{ slot.endTime }}</small>
 
-  <!-- Tooltip wyświetla się TYLKO jeśli rezerwacja i myszka jest w danym bloku -->
   <div 
     class="slot-tooltip" 
     *ngIf="showTooltip"
   >
     <strong>Szczegóły wizyty</strong><br>
-    Typ: {{ slot.type }}<br>
-    {{ slot.reservationDetails }}
+    <div [innerHTML]="getReservationDetails()"></div>
   </div>
 </div>

@@ -1,8 +1,8 @@
 export interface TimeSlot {
+  date: string;
   startTime: string;
   endTime: string;
   isReserved: boolean;
   isPast: boolean;
-  type?: string;
-  reservationDetails?: string;
+  reservationId?: number;
 }

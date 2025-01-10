@@ -1,0 +1,14 @@
+<div *ngIf="pendingReservations.length === 0">
+    <p>Koszyk jest pusty.</p>
+  </div>
+  
+  <div *ngFor="let reservation of pendingReservations" class="reservation-item">
+    <p>
+      <strong>Data:</strong> {{ reservation.date }}<br>
+      <strong>Godzina:</strong> {{ reservation.startTime }} - {{ reservation.endTime }}<br>
+      <strong>Pacjent:</strong> {{ reservation.patientName }} {{ reservation.patientSurname }}<br>
+      <strong>Typ:</strong> {{ reservation.type }}
+    </p>
+    <button class="btn btn-danger" (click)="removeReservation(reservation.id)">Usuń</button>
+  </div>
+  

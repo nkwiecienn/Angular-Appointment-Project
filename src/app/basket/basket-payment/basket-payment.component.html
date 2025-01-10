@@ -1,0 +1,8 @@
+<div class="payment-form">
+    <h3>Płatność</h3>
+    <label for="blikCode">Kod BLIK:</label>
+    <input type="text" id="blikCode" [(ngModel)]="blikCode" maxlength="6" class="form-control mb-3" />
+  
+    <button class="btn btn-success" (click)="processPayment()">Zapłać</button>
+  </div>
+  

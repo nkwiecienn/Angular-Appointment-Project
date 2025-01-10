@@ -1,3 +1,62 @@
-{
-  "reservations": []
-}
+[
+  {
+    "id": 101,
+    "date": "2025-01-01",
+    "startTime": "08:30",
+    "endTime": "09:30",
+    "length": 60,
+    "type": "konsultacja",
+    "patientName": "Anna",
+    "patientSurname": "Kowalska",
+    "gender": "kobieta",
+    "age": 34,
+    "details": "Porada dotycząca wyników badań",
+    "isCanceled": false,
+    "isReserved": true
+  },
+  {
+    "id": 102,
+    "date": "2025-01-02",
+    "startTime": "08:30",
+    "endTime": "09:30",
+    "length": 60,
+    "type": "badanie",
+    "patientName": "Jan",
+    "patientSurname": "Nowak",
+    "gender": "mężczyzna",
+    "age": 45,
+    "details": "Badanie kontrolne po operacji",
+    "isCanceled": false,
+    "isReserved": true
+  },
+  {
+    "id": 103,
+    "date": "2025-01-03",
+    "startTime": "10:00",
+    "endTime": "10:30",
+    "length": 30,
+    "type": "recepta",
+    "patientName": "Maria",
+    "patientSurname": "Wiśniewska",
+    "gender": "kobieta",
+    "age": 29,
+    "details": "Przepisanie stałej recepty",
+    "isCanceled": false,
+    "isReserved": true
+  },
+  {
+    "id": 104,
+    "date": "2025-01-13",
+    "startTime": "10:00",
+    "endTime": "10:30",
+    "length": 30,
+    "type": "recepta",
+    "patientName": "Anna",
+    "patientSurname": "Kwiecień",
+    "gender": "kobieta",
+    "age": 29,
+    "details": "Przepisanie stałej recepty",
+    "isCanceled": false,
+    "isReserved": true
+  }
+]
