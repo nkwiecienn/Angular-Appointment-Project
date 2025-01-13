@@ -22,13 +22,13 @@ export class AppComponent {
   }
 
   get userEmail(): string | null {
-    return localStorage.getItem('email'); // Pobiera email z localStorage
+    return localStorage.getItem('email');
   }
 
   logout() {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('email');
-    this.router.navigate(['/login']); // Przekierowanie na stronę logowania
+    this.router.navigate(['/login']);
   }
 }

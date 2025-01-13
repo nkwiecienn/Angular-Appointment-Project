@@ -5,48 +5,62 @@ import { TimeSlot } from '../calendar/models/time-slot';
 import { Reservation } from '../reservation/models/reservation';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SlotService {
+  private baseUrl = 'https://localhost:7194/api'; // URL backendu
   private slots: TimeSlot[] = [];
-  private slotsUrl = 'assets/data/schedule.json';
 
   constructor(private http: HttpClient) {}
 
-  loadSlots(): Observable<TimeSlot[]> {
-    return this.http.get<TimeSlot[]>(this.slotsUrl);
+  // Pobierz wszystkie sloty
+  getSlots(): Observable<TimeSlot[]> {
+    return this.http.get<TimeSlot[]>(`${this.baseUrl}/TimeSlot`);
   }
 
-  initializeSlots(slots: TimeSlot[]): void {
-    this.slots = slots;
+  // Pobierz sloty dla konkretnej daty
+  getSlotsForDate(date: string): Observable<TimeSlot[]> {
+    return this.http.get<TimeSlot[]>(`${this.baseUrl}/TimeSlot?date=${date}`);
   }
 
-  getSlotsForDate(date: string): TimeSlot[] {
-    return this.slots.filter(slot => slot.date === date);
-  }
-
-  reserveSlots(reservation: Reservation): void {
-    const slotsToReserve = this.getSlotsForReservation(reservation);
-    slotsToReserve.forEach(slot => {
-      slot.reservationId = reservation.id;
-      slot.isReserved = true;
+  // Zarezerwuj slot, przypisując do niego reservationId
+  reserveSlot(slotId: number, reservationId: number): Observable<any> {
+    return this.http.put(`${this.baseUrl}/TimeSlot/${slotId}/reserve`, {
+      reservationId,
     });
   }
 
-  releaseSlots(reservationId: number): void {
-    this.slots.forEach(slot => {
-      if (slot.reservationId === reservationId) {
-        slot.reservationId = undefined;
-        slot.isReserved = false;
-      }
+  // Zwolnij slot, ustawiając isReserved na false i usuwając reservationId
+  releaseSlot(slotId: number): Observable<any> {
+    return this.http.put(`${this.baseUrl}/TimeSlot/${slotId}/release`, {});
+  }
+
+  // Pobierz wszystkie sloty z backendu i zapisz je lokalnie
+  initializeSlots(): Observable<TimeSlot[]> {
+    return new Observable<TimeSlot[]>((observer) => {
+      this.http.get<TimeSlot[]>(this.baseUrl).subscribe({
+        next: (data) => {
+          this.slots = data; // Zapisz sloty w pamięci
+          observer.next(data);
+          observer.complete();
+        },
+        error: (err) => {
+          observer.error(err);
+        },
+      });
     });
   }
 
-  public getSlotsForReservation(reservation: Reservation): TimeSlot[] {
-    return this.slots.filter(slot =>
-      slot.date === reservation.date &&
-      slot.startTime >= reservation.startTime &&
-      slot.endTime <= reservation.endTime
-    );
+  // Pobierz sloty dla tygodnia (filtruj lokalnie)
+  getSlotsForWeek(startDate: string): TimeSlot[] {
+    const startOfWeek = new Date(startDate);
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 7);
+
+    // Filtrowanie slotów w pamięci
+    return this.slots.filter((slot) => {
+      const slotDate = new Date(slot.date);
+      return slotDate >= startOfWeek && slotDate < endOfWeek;
+    });
   }
 }

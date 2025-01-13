@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -11,30 +11,46 @@ import { Observable } from 'rxjs';
   selector: 'app-absence',
   imports: [CommonModule, ReactiveFormsModule, RouterModule],
   templateUrl: './absence.component.html',
-  styleUrls: ['./absence.component.css']
+  styleUrls: ['./absence.component.css'],
 })
-export class AbsenceComponent {
+export class AbsenceComponent implements OnInit {
   form: FormGroup;
   absences$: Observable<Absence[]>;
 
-  constructor(
-    private fb: FormBuilder,
-    private absenceService: AbsenceService
-  ) {
+  constructor(private fb: FormBuilder, private absenceService: AbsenceService) {
     this.form = this.fb.group({
-      day: ['', Validators.required]
+      day: ['', Validators.required],
     });
+    this.absences$ = new Observable<Absence[]>();
+  }
+
+  ngOnInit(): void {
+    this.loadAbsences();
+  }
+
+  // Pobierz wszystkie absencje
+  loadAbsences(): void {
     this.absences$ = this.absenceService.getAbsences();
   }
 
+  // Zapisz nową absencję
   save(): void {
     if (this.form.valid) {
       const newAbsence = {
-        id: 0, // ID zostanie przypisane w serwisie
-        day: this.form.value.day
+        day: this.form.value.day,
+        userId: 1, // ID użytkownika można dynamicznie pobierać z kontekstu (np. zalogowanego użytkownika)
       };
-      this.absenceService.addAbsence(newAbsence);
-      this.form.reset();
+      this.absenceService.addAbsence(newAbsence).subscribe(() => {
+        this.loadAbsences(); // Odśwież listę po dodaniu
+        this.form.reset();
+      });
     }
+  }
+
+  // Usuń absencję
+  deleteAbsence(absenceId: number): void {
+    this.absenceService.deleteAbsence(absenceId).subscribe(() => {
+      this.loadAbsences(); // Odśwież listę po usunięciu
+    });
   }
 }

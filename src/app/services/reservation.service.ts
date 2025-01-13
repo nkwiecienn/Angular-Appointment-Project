@@ -57,24 +57,24 @@ export class ReservationService {
   }
   
   reserveAllPending(): void {
-    const currentReservations = this.reservations$.getValue();
-    const updatedReservations = currentReservations.map(reservation => {
-      if (!reservation.isReserved) {
-        reservation.isReserved = true;
-        this.assignReservationToSlots(reservation);
-      }
-      return reservation;
-    });
-    this.reservations$.next(updatedReservations);
+    // const currentReservations = this.reservations$.getValue();
+    // const updatedReservations = currentReservations.map(reservation => {
+    //   if (!reservation.isReserved) {
+    //     reservation.isReserved = true;
+    //     this.assignReservationToSlots(reservation);
+    //   }
+    //   return reservation;
+    // });
+    // this.reservations$.next(updatedReservations);
   }
   
   
   private assignReservationToSlots(reservation: Reservation): void {
-    const slots = this.slotService.getSlotsForReservation(reservation);
-    slots.forEach(slot => {
-      slot.isReserved = true;
-      slot.reservationId = reservation.id;
-    });
+    // const slots = this.slotService.getSlotsForReservation(reservation);
+    // slots.forEach(slot => {
+    //   slot.isReserved = true;
+    //   slot.reservationId = reservation.id;
+    // });
   }
   
 }

@@ -1,35 +1,28 @@
 import { Injectable } from '@angular/core';
-import { Absence } from '../absence/models/absence';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
+import { Absence } from '../absence/models/absence';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AbsenceService {
-  private absenceUrl = 'assets/data/absence.json';
-  private absences$: BehaviorSubject<Absence[]> = new BehaviorSubject<Absence[]>([]);
+  private baseUrl = 'https://localhost:7194/api/Absence'; // Adres API backendu
 
-  constructor(private http: HttpClient) {
-    this.loadAbsences();
-  }
+  constructor(private http: HttpClient) {}
 
-  private loadAbsences(): void {
-    this.http.get<{ absences: Absence[] }>(this.absenceUrl).subscribe((data) => {
-      this.absences$.next(data.absences || []);
-    });
-  }
-
+  // Pobierz wszystkie absencje
   getAbsences(): Observable<Absence[]> {
-    return this.absences$.asObservable();
+    return this.http.get<Absence[]>(`${this.baseUrl}`);
   }
 
-  addAbsence(newAbsence: Absence): void {
-    const currentAbsences = this.absences$.getValue();
-    const maxId = currentAbsences.length > 0
-      ? Math.max(...currentAbsences.map(a => a.id))
-      : 0;
-    newAbsence.id = maxId + 1;
-    this.absences$.next([...currentAbsences, newAbsence]);
+  // Dodaj nową absencję
+  addAbsence(newAbsence: { day: string; userId: number }): Observable<Absence> {
+    return this.http.post<Absence>(`${this.baseUrl}`, newAbsence);
+  }
+
+  // Usuń absencję
+  deleteAbsence(absenceId: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/${absenceId}`);
   }
 }
