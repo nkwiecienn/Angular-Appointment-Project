@@ -63,12 +63,10 @@ export class CalendarViewComponent implements OnInit {
     this.todayStr = new Date().toISOString().split('T')[0];
     this.startOfWeek = getMondayOf(new Date());
 
-    // Ładowanie dostępności
     this.availabilityService.getAvailabilities().subscribe((availabilities) => {
       this.allAvailabilities = availabilities;
     });
   
-    // Ładowanie nieobecności
     this.absenceService.getAbsences().subscribe((absences) => {
       this.absences = absences;
     });
@@ -77,7 +75,6 @@ export class CalendarViewComponent implements OnInit {
       this.reservations = reservations;
     });
   
-    // Ładowanie slotów
     this.slotService.loadSlots().subscribe((slots) => {
       this.slotService.initializeSlots(slots);
       this.loadWeekData();

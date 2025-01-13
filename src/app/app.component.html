@@ -1,14 +1,30 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
   <a class="navbar-brand" href="#">PAW Projekt</a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+  <button
+    class="navbar-toggler"
+    type="button"
+    data-toggle="collapse"
+    data-target="#navbarNavAltMarkup"
+    aria-controls="navbarNavAltMarkup"
+    aria-expanded="false"
+    aria-label="Toggle navigation"
+  >
     <span class="navbar-toggler-icon"></span>
   </button>
   <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-    <div class="navbar-nav">
-      <a class="nav-item nav-link" routerLink="/calendar" >Kalendarz</a>
+    <div class="navbar-nav" *ngIf="isLoggedIn">
+      <a class="nav-item nav-link" routerLink="/calendar">Kalendarz</a>
       <a class="nav-item nav-link" routerLink="/availability">Dostępność</a>
       <a class="nav-item nav-link" routerLink="/absence">Absencja</a>
       <a class="nav-item nav-link" routerLink="/basket">Koszyk</a>
+    </div>
+    <div class="navbar-nav ms-auto" *ngIf="isLoggedIn">
+      <span class="navbar-text me-3">{{ userEmail }}</span>
+      <button class="btn btn-danger me-3" (click)="logout()">Wyloguj się</button>
+    </div>
+    <div class="navbar-nav ms-auto" *ngIf="!isLoggedIn">
+      <a class="nav-item nav-link" routerLink="/login">Zaloguj się</a>
+      <a class="nav-item nav-link" routerLink="/register">Zarejestruj się</a>
     </div>
   </div>
 </nav>

@@ -1,0 +1,78 @@
+<div class="container mt-5">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="card shadow-sm">
+          <div class="card-header bg-success text-white">
+            <h4 class="text-center">Rejestracja</h4>
+          </div>
+          <div class="card-body">
+            <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+              <div class="mb-3">
+                <label for="firstName" class="form-label">Imię</label>
+                <input
+                  type="text"
+                  id="firstName"
+                  formControlName="firstName"
+                  class="form-control"
+                  [ngClass]="{'is-invalid': registerForm.get('firstName')?.invalid && registerForm.get('firstName')?.touched}"
+                />
+                <div class="invalid-feedback">Imię jest wymagane.</div>
+              </div>
+              <div class="mb-3">
+                <label for="lastName" class="form-label">Nazwisko</label>
+                <input
+                  type="text"
+                  id="lastName"
+                  formControlName="lastName"
+                  class="form-control"
+                  [ngClass]="{'is-invalid': registerForm.get('lastName')?.invalid && registerForm.get('lastName')?.touched}"
+                />
+                <div class="invalid-feedback">Nazwisko jest wymagane.</div>
+              </div>
+              <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input
+                  type="email"
+                  id="email"
+                  formControlName="email"
+                  class="form-control"
+                  [ngClass]="{'is-invalid': registerForm.get('email')?.invalid && registerForm.get('email')?.touched}"
+                />
+                <div class="invalid-feedback">Proszę wprowadzić poprawny adres email.</div>
+              </div>
+              <div class="mb-3">
+                <label for="password" class="form-label">Hasło</label>
+                <input
+                  type="password"
+                  id="password"
+                  formControlName="password"
+                  class="form-control"
+                  [ngClass]="{'is-invalid': registerForm.get('password')?.invalid && registerForm.get('password')?.touched}"
+                />
+                <div class="invalid-feedback">Hasło jest wymagane.</div>
+              </div>
+              <div class="mb-3">
+                <label for="role" class="form-label">Rola</label>
+                <select id="role" formControlName="role" class="form-select">
+                  <option value="">Wybierz rolę...</option>
+                  <option value="1">Użytkownik</option>
+                  <option value="2">Administrator</option>
+                </select>
+                <div class="invalid-feedback">Proszę wybrać rolę.</div>
+              </div>
+
+              <div *ngIf="errorMessage" class="alert alert-danger mt-3">
+                {{ errorMessage }}
+              </div>
+
+              <button type="submit" class="btn btn-success w-100" [disabled]="!registerForm.valid">Zarejestruj się</button>
+            </form>
+          </div>
+          <div class="card-footer text-center">
+            <small>Masz już konto? <a class="text-success" routerLink="/login">Zaloguj się</a></small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  

@@ -3,25 +3,40 @@ import { CalendarViewComponent } from './calendar/calendar-view/calendar-view.co
 import { AvailabilityHomeComponent } from './availability/availability-home/availability-home.component';
 import { AbsenceComponent } from './absence/absence.component'; // Import komponentu bez lazy loadingu
 import { BasketHomeComponent } from './basket/basket-home/basket-home.component'; // Import komponentu bez lazy loadingu
+import { RegisterComponent } from './auth/register/register.component';
+import { LoginComponent } from './auth/login/login.component';
+import { AuthGuard } from './auth.guard';
 
 export const routes: Routes = [
   {
+    path: 'register',
+    component: RegisterComponent
+  },
+  {
+    path: 'login',
+    component: LoginComponent
+  },
+  {
     path: 'availability',
-    component: AvailabilityHomeComponent // Bez lazy loadingu
+    component: AvailabilityHomeComponent,
+    canActivate: [AuthGuard]
   },
   {
     path: 'absence',
-    component: AbsenceComponent // Bez lazy loadingu
+    component: AbsenceComponent,
+    canActivate: [AuthGuard]
   },
   {
     path: 'calendar',
-    component: CalendarViewComponent // Bez lazy loadingu
+    component: CalendarViewComponent,
+    canActivate: [AuthGuard] 
   },
   {
     path: 'basket',
-    component: BasketHomeComponent // Bez lazy loadingu
+    component: BasketHomeComponent,
+    canActivate: [AuthGuard] 
   },
   {
-    path: '', redirectTo: 'calendar', pathMatch: 'full' // Domyślne przekierowanie na /calendar
+    path: '*', redirectTo: 'calendar', pathMatch: 'full' 
   }
 ];

@@ -1,0 +1,49 @@
+import { Component } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AuthenticationService } from '../../services/authentication.service';
+import { CommonModule } from '@angular/common';
+import { Router, RouterModule } from '@angular/router';
+
+@Component({
+  selector: 'app-login',
+  standalone: true,
+  imports: [ReactiveFormsModule, CommonModule, RouterModule],
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.css'],
+})
+export class LoginComponent {
+  loginForm: FormGroup;
+  errorMessage: string | null = null; // Do wyświetlania błędów
+
+  constructor(
+    private fb: FormBuilder,
+    private authService: AuthenticationService,
+    private router: Router
+  ) {
+    this.loginForm = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', Validators.required],
+    });
+  }
+
+  onSubmit() {
+    if (this.loginForm.valid) {
+      this.authService.login(this.loginForm.value).subscribe({
+        next: (response) => {
+          console.log('Login successful', response);
+          // Przechowaj token w localStorage
+          localStorage.setItem('accessToken', response.AccessToken);
+          localStorage.setItem('refreshToken', response.RefreshToken);
+          localStorage.setItem('email', this.loginForm.value.email);
+
+          // Przejdź do /calendar
+          this.router.navigate(['/calendar']);
+        },
+        error: (error) => {
+          console.error('Login failed', error);
+          this.errorMessage = 'Nie udało się zalogować. Sprawdź dane logowania.';
+        },
+      });
+    }
+  }
+}

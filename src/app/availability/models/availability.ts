@@ -13,3 +13,4 @@ export interface Availability {
     end: string;
   }[];
 }
+ 

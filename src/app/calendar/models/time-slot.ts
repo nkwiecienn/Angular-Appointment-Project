@@ -6,3 +6,4 @@ export interface TimeSlot {
   isPast: boolean;
   reservationId?: number;
 }
+ 
