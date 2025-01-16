@@ -9,7 +9,7 @@
           Dostępność w przedziale dat
         </div>
         <div class="card-body">
-          <app-range-availability></app-range-availability>
+          <app-range-availability (availabilityAdded)="onAvailabilityAdded()"></app-range-availability>
         </div>
       </div>
     </div>
@@ -19,7 +19,7 @@
           Dostępność w konkretnym dniu
         </div>
         <div class="card-body">
-          <app-single-day-availability></app-single-day-availability>
+          <app-single-day-availability (availabilityAdded)="onAvailabilityAdded()"></app-single-day-availability>
         </div>
       </div>
     </div>
@@ -38,13 +38,13 @@
       </span>
       <span *ngIf="availability.type === 'range'">
         Zakres: {{ availability.dateFrom }} - {{ availability.dateTo }} <br>
-        Dni tygodnia: {{ availability.daysOfWeek }}
+        Dni tygodnia: {{ availability.daysOfWeek?.join(', ') || 'Brak' }}
       </span>
 
       <br>
       Godziny:
       <span *ngFor="let t of availability.timeRanges">
-        {{ t.start }}-{{ t.end }}; 
+        {{ t.start }}-{{ t.end }};
       </span>
     </li>
   </ul>

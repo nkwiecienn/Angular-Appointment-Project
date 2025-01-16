@@ -1,35 +1,33 @@
 import { Injectable } from '@angular/core';
-import { Availability } from '../availability/models/availability';
 import { HttpClient } from '@angular/common/http';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { Observable } from 'rxjs';
+import { Availability } from '../availability/models/availability';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AvailabilityService {
-  private availabilityUrl = 'assets/data/availability.json';
-  private availabilities$: BehaviorSubject<Availability[]> = new BehaviorSubject<Availability[]>([]);
+  private baseUrl = 'https://localhost:7194/api/Availability'; // URL backendu
 
-  constructor(private http: HttpClient) {
-    this.loadAvailabilities();
-  }
+  constructor(private http: HttpClient) {}
 
-  private loadAvailabilities(): void {
-    this.http.get<{ availabilities: Availability[] }>(this.availabilityUrl).subscribe((data) => {
-      this.availabilities$.next(data.availabilities || []);
-    });
-  }
-
+  // Pobierz wszystkie dostępności
   getAvailabilities(): Observable<Availability[]> {
-    return this.availabilities$.asObservable();
+    return this.http.get<Availability[]>(`${this.baseUrl}`);
   }
 
-  addAvailability(newAvailability: Availability): void {
-    const currentAvailabilities = this.availabilities$.getValue();
-    const maxId = currentAvailabilities.length > 0
-      ? Math.max(...currentAvailabilities.map(a => a.id))
-      : 0;
-    newAvailability.id = maxId + 1;
-    this.availabilities$.next([...currentAvailabilities, newAvailability]);
+  // Dodaj nową dostępność
+  addAvailability(availability: Availability): Observable<Availability> {
+    return this.http.post<Availability>(`${this.baseUrl}`, availability);
+  }
+
+  // Zaktualizuj istniejącą dostępność
+  updateAvailability(id: number, availability: Availability): Observable<void> {
+    return this.http.put<void>(`${this.baseUrl}/${id}`, availability);
+  }
+
+  // Usuń dostępność
+  deleteAvailability(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/${id}`);
   }
 }

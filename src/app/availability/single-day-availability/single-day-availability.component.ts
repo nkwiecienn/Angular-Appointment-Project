@@ -1,5 +1,4 @@
-// single-day-availability.component.ts
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 
@@ -10,20 +9,17 @@ import { Availability } from '../models/availability';
   standalone: true,
   selector: 'app-single-day-availability',
   imports: [CommonModule, ReactiveFormsModule], // standalone
-  templateUrl: './single-day-availability.component.html'
+  templateUrl: './single-day-availability.component.html',
 })
 export class SingleDayAvailabilityComponent {
+  @Output() availabilityAdded = new EventEmitter<void>();
+
   form: FormGroup;
 
-  constructor(
-    private fb: FormBuilder,
-    private availabilityService: AvailabilityService
-  ) {
+  constructor(private fb: FormBuilder, private availabilityService: AvailabilityService) {
     this.form = this.fb.group({
       day: ['', Validators.required],
-      timeRanges: this.fb.array([
-        this.buildTimeRange()
-      ])
+      timeRanges: this.fb.array([this.buildTimeRange()]),
     });
   }
 
@@ -34,7 +30,7 @@ export class SingleDayAvailabilityComponent {
   buildTimeRange(): FormGroup {
     return this.fb.group({
       start: ['', Validators.required],
-      end: ['', Validators.required]
+      end: ['', Validators.required],
     });
   }
 
@@ -52,10 +48,14 @@ export class SingleDayAvailabilityComponent {
         id: 0,
         type: 'single-day',
         day: this.form.value.day,
-        timeRanges: this.form.value.timeRanges
+        timeRanges: this.form.value.timeRanges,
+        userId: 1 // Konwersja UserId na liczbę
       };
-      this.availabilityService.addAvailability(newAvailability);
-      alert('Zapisano dostępność (jednodniową).');
+  
+      this.availabilityService.addAvailability(newAvailability).subscribe(() => {
+        alert('Zapisano dostępność (jednodniową).');
+        this.availabilityAdded.emit(); // Powiadomienie o dodaniu dostępności
+      });
     }
-  }
+  }  
 }

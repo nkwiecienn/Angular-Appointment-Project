@@ -12,19 +12,30 @@ import { Observable } from 'rxjs';
   imports: [
     CommonModule,
     RangeAvailabilityComponent,
-    SingleDayAvailabilityComponent
+    SingleDayAvailabilityComponent,
   ],
   templateUrl: './availability-home.component.html',
-  styleUrls: ['./availability-home.component.css']
+  styleUrls: ['./availability-home.component.css'],
 })
 export class AvailabilityHomeComponent implements OnInit {
-  availabilities$: Observable<Availability[]>;
+  availabilities$!: Observable<Availability[]>; // Modyfikator '!' mówi TypeScriptowi, że właściwość zostanie zainicjowana później
 
-  constructor(private availabilityService: AvailabilityService) {
+  constructor(private availabilityService: AvailabilityService) {}
+
+  ngOnInit(): void {
+    this.loadAvailabilities();
+  }
+
+  loadAvailabilities(): void {
     this.availabilities$ = this.availabilityService.getAvailabilities();
   }
 
-  ngOnInit(): void {
-    // Nic więcej do inicjalizacji, Observable automatycznie zaktualizuje dane
+  onAvailabilityAdded(): void {
+    this.loadAvailabilities();
+  }
+
+  onAvailabilityDeleted(): void {
+    this.loadAvailabilities();
   }
 }
+

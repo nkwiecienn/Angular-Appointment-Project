@@ -7,6 +7,8 @@ import { DaySchedule } from '../models/day-schedule';
 import { TimeSlot } from '../models/time-slot';
 import { AbsenceService } from '../../services/absence.service';
 import { Absence } from '../../absence/models/absence';
+import { Availability } from '../../availability/models/availability';
+import { AvailabilityService } from '../../services/availability.service';
 
 @Component({
   standalone: true,
@@ -19,6 +21,7 @@ export class CalendarViewComponent implements OnInit {
   startOfWeek: Date = new Date();
   weekDays: DaySchedule[] = [];
   absences: Absence[] = [];
+  allAvailabilities: Availability[] = [];
   startHour = 8;
   numHours = 6;
   slotLength = 30;
@@ -26,7 +29,8 @@ export class CalendarViewComponent implements OnInit {
   todayStr = '';
 
   constructor(private slotService: SlotService,
-    private absenceService: AbsenceService
+    private absenceService: AbsenceService,
+    private availabilityService: AvailabilityService
   ) {}
 
   ngOnInit(): void {
@@ -41,6 +45,11 @@ export class CalendarViewComponent implements OnInit {
     this.absenceService.getAbsences().subscribe((absences) => {
       this.absences = absences;
       this.loadWeekData();
+    });
+
+    this.availabilityService.getAvailabilities().subscribe((availabilities) => {
+      this.allAvailabilities = availabilities; // Przypisanie danych do zmiennej
+      this.loadWeekData(); // Załaduj dane kalendarza po załadowaniu dostępności
     });
   }
 
@@ -127,6 +136,40 @@ export class CalendarViewComponent implements OnInit {
   isAbsent(day: DaySchedule): boolean {
     return this.absences.some((absence) => absence.day === day.date);
   }
+
+  public isAvailable(slotIndex: number, day: DaySchedule): boolean {
+
+    const slotStartMinutes = this.startHour * 60 + (slotIndex * this.slotLength);
+    const slotEndMinutes   = slotStartMinutes + this.slotLength;
+
+    const slotStartStr = formatHHMM(slotStartMinutes);
+    const slotEndStr   = formatHHMM(slotEndMinutes);
+
+    const [yyyy, mm, dd] = day.date.split('-').map(Number);
+    const dayDate = new Date(yyyy, mm - 1, dd);
+    const dayOfWeek = dayDate.getDay(); 
+
+    for (const avail of this.allAvailabilities) {
+      if (avail.type === 'single-day') {
+        if (avail.day === day.date) {
+          if (anyTimeRangeCovers(slotStartStr, slotEndStr, avail.timeRanges)) {
+            return true;
+          }
+        }
+      }
+      else if (avail.type === 'range') {
+        if (isDateInRange(day.date, avail.dateFrom!, avail.dateTo!)) {
+          if (avail.daysOfWeek && avail.daysOfWeek.includes(dayOfWeek)) {
+            if (anyTimeRangeCovers(slotStartStr, slotEndStr, avail.timeRanges)) {
+              return true;
+            }
+          }
+        }
+      }
+    }
+
+    return false;
+  }
   
 }
 
@@ -174,3 +217,26 @@ function padZero(num: number): string {
   return (num < 10) ? '0' + num : '' + num;
 }
 
+function anyTimeRangeCovers(
+  slotStart: string,
+  slotEnd: string,
+  timeRanges: { start: string; end: string }[]
+): boolean {
+  for (const range of timeRanges) {
+    if (
+      slotStart >= range.start && // Slot zaczyna się po lub w tym samym czasie co początek zakresu
+      slotEnd <= range.end       // Slot kończy się przed lub w tym samym czasie co koniec zakresu
+    ) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function isDateInRange(day: string, from: string, to: string): boolean {
+  const dayDate = new Date(day);
+  const fromDate = new Date(from);
+  const toDate = new Date(to);
+
+  return dayDate >= fromDate && dayDate <= toDate;
+}
