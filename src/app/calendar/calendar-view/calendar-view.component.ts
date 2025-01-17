@@ -9,10 +9,20 @@ import { AbsenceService } from '../../services/absence.service';
 import { Absence } from '../../absence/models/absence';
 import { Availability } from '../../availability/models/availability';
 import { AvailabilityService } from '../../services/availability.service';
+import { ReservationComponent } from '../../reservation/reservation.component';
+
+interface GeneratedSlot {
+  date: string;
+  startTime: string;
+  endTime: string;
+  isReserved: boolean;
+  isPast: boolean;
+  reservationId?: number;
+}
 
 @Component({
   standalone: true,
-  imports: [CommonModule, RouterModule, CalendarSlotBlockComponent],
+  imports: [CommonModule, RouterModule, CalendarSlotBlockComponent, ReservationComponent],
   selector: 'app-calendar-view',
   templateUrl: './calendar-view.component.html',
   styleUrls: ['./calendar-view.component.css']
@@ -53,38 +63,93 @@ export class CalendarViewComponent implements OnInit {
     });
   }
 
+  // loadWeekData(): void {
+  //   const totalSlots = (this.numHours * 60) / this.slotLength; 
+  //   this.slotIndexes = Array.from({ length: totalSlots }, (_, i) => i);
+  
+  //   const startOfWeekStr = this.startOfWeek.toISOString().split('T')[0];
+  //   const slotsForWeek = this.slotService.getSlotsForWeek(startOfWeekStr); // Filtrowanie slotów w pamięci
+
+  //   const daysMap = new Map<string, DaySchedule>();
+
+  //   // Grupuj sloty według daty
+  //   slotsForWeek.forEach((slot) => {
+  //     if (!daysMap.has(slot.date)) {
+  //       daysMap.set(slot.date, {
+  //         date: slot.date,
+  //         dayOfWeek: getDayOfWeek(new Date(slot.date).getDay()),
+  //         reservedCount: 0,
+  //         slots: []
+  //       });
+  //     }
+  //     const day = daysMap.get(slot.date)!;
+  //     day.slots.push({
+  //       ...slot,
+  //       isPast: new Date(slot.date + 'T' + slot.startTime) < new Date()
+  //     });
+  //     if (slot.isReserved) {
+  //       day.reservedCount++;
+  //     }
+  //   });
+
+  //   // Ustaw dane w kolejności tygodniowej
+  //   this.weekDays = generateWeekDays(this.startOfWeek, Array.from(daysMap.values()));
+  // }
+
   loadWeekData(): void {
     const totalSlots = (this.numHours * 60) / this.slotLength; 
     this.slotIndexes = Array.from({ length: totalSlots }, (_, i) => i);
   
     const startOfWeekStr = this.startOfWeek.toISOString().split('T')[0];
-    const slotsForWeek = this.slotService.getSlotsForWeek(startOfWeekStr); // Filtrowanie slotów w pamięci
-
-    const daysMap = new Map<string, DaySchedule>();
-
-    // Grupuj sloty według daty
+    const slotsForWeek = this.slotService.getSlotsForWeek(startOfWeekStr); // Pobierz zarezerwowane sloty
+    const reservedSlotsMap = new Map<string, GeneratedSlot>();
+  
+    // Mapa zarezerwowanych slotów (klucz = "date|startTime")
     slotsForWeek.forEach((slot) => {
-      if (!daysMap.has(slot.date)) {
-        daysMap.set(slot.date, {
-          date: slot.date,
-          dayOfWeek: getDayOfWeek(new Date(slot.date).getDay()),
-          reservedCount: 0,
-          slots: []
-        });
-      }
-      const day = daysMap.get(slot.date)!;
-      day.slots.push({
-        ...slot,
-        isPast: new Date(slot.date + 'T' + slot.startTime) < new Date()
-      });
-      if (slot.isReserved) {
-        day.reservedCount++;
-      }
+      const key = `${slot.date}|${slot.startTime}`;
+      reservedSlotsMap.set(key, slot);
     });
-
-    // Ustaw dane w kolejności tygodniowej
-    this.weekDays = generateWeekDays(this.startOfWeek, Array.from(daysMap.values()));
+  
+    // Generuj sloty dla każdego dnia tygodnia
+    this.weekDays = generateWeekDays(this.startOfWeek, []).map((day) => {
+      const generatedSlots: GeneratedSlot[] = [];
+  
+      for (let i = 0; i < totalSlots; i++) {
+        const slotStartMinutes = this.startHour * 60 + i * this.slotLength;
+        const slotEndMinutes = slotStartMinutes + this.slotLength;
+  
+        const slotStartStr = formatHHMM(slotStartMinutes);
+        const slotEndStr = formatHHMM(slotEndMinutes);
+  
+        const slotKey = `${day.date}|${slotStartStr}`;
+  
+        // Sprawdź, czy slot jest zarezerwowany
+        const reservedSlot = reservedSlotsMap.get(slotKey);
+  
+        const slot: GeneratedSlot = reservedSlot
+          ? {
+              ...reservedSlot,
+              isPast: new Date(day.date + 'T' + slotStartStr) < new Date(),
+            }
+          : {
+              date: day.date,
+              startTime: slotStartStr,
+              endTime: slotEndStr,
+              isReserved: false,
+              isPast: new Date(day.date + 'T' + slotStartStr) < new Date(),
+            };
+  
+        generatedSlots.push(slot);
+      }
+  
+      return {
+        ...day,
+        slots: generatedSlots,
+        reservedCount: generatedSlots.filter((s) => s.isReserved).length,
+      };
+    });
   }
+  
 
   goToPreviousWeek() {
     this.startOfWeek.setDate(this.startOfWeek.getDate() - 7);
@@ -170,7 +235,47 @@ export class CalendarViewComponent implements OnInit {
 
     return false;
   }
-  
+
+  public isSlotClickable(slotIndex: number, day: DaySchedule): boolean {
+    const slot = day.slots[slotIndex];
+    return slot && !slot.isReserved && !slot.isPast && this.isAvailable(slotIndex, day) && !this.isAbsent(day);
+  }
+
+  private publicAreSlotsAvailable(slotIndex: number, day: DaySchedule, length: number = 30): boolean {
+    const slotsRequired = Math.ceil(length / 30);
+
+    for (let i = 0; i < slotsRequired; i++) {
+      const currentSlotIndex = slotIndex + i;
+      const slot = day.slots[currentSlotIndex];
+
+      if (!slot || slot.isReserved || !this.isAvailable(currentSlotIndex, day) || this.isAbsent(day)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  selectedSlot: { date: string, startTime: string } | null = null;
+  currentSlotIndexDay: { slotIndex: number, day: DaySchedule } | null = null;
+
+  onSlotClick(slotIndex: number, day: DaySchedule): void {
+    if (this.isSlotClickable(slotIndex, day)) {
+      this.selectedSlot = { date: day.date, startTime: this.displaySlotLabel(slotIndex) };
+      this.currentSlotIndexDay = { slotIndex, day };
+    }
+  }
+
+  areSlotsAvailable(length: number): boolean {
+    if(this.currentSlotIndexDay?.slotIndex == null) return false;
+    if(this.currentSlotIndexDay?.day == null) return false;
+
+    return this.publicAreSlotsAvailable(this.currentSlotIndexDay.slotIndex, this.currentSlotIndexDay.day, length);
+  }
+
+  closeReservationForm(): void {
+    this.selectedSlot = null;
+  }
 }
 
 function getMondayOf(date: Date): Date {

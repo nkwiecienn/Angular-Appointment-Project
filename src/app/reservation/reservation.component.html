@@ -1,50 +1,109 @@
 <h3>Rezerwacja</h3>
-<form [formGroup]="form">
+<form [formGroup]="form" (ngSubmit)="save()">
 
   <div *ngIf="!slotsAvailable" class="alert alert-danger">
     Nie wszystkie wymagane sloty są dostępne dla wybranej długości rezerwacji.
   </div>
 
   <div class="mb-3">
-    <label>Długość (minuty):</label>
-    <input type="number" formControlName="length" class="form-control">
+    <label for="length" class="form-label">Długość (minuty):</label>
+    <input
+      id="length"
+      type="number"
+      formControlName="length"
+      class="form-control"
+      [class.is-invalid]="form.get('length')?.invalid && form.get('length')?.touched"
+    >
+    <div *ngIf="form.get('length')?.invalid && form.get('length')?.touched" class="invalid-feedback">
+      Podaj poprawną długość (minimum 30 minut).
+    </div>
   </div>
+
   <div class="mb-3">
-    <label>Typ:</label>
-    <select formControlName="type" class="form-select">
+    <label for="type" class="form-label">Typ:</label>
+    <select
+      id="type"
+      formControlName="type"
+      class="form-select"
+      [class.is-invalid]="form.get('type')?.invalid && form.get('type')?.touched"
+    >
       <option value="konsultacja">Konsultacja</option>
       <option value="badanie">Badanie</option>
       <option value="wizyta kontrolna">Wizyta kontrolna</option>
       <option value="recepta">Recepta</option>
       <option value="inny">Inny</option>
     </select>
+    <div *ngIf="form.get('type')?.invalid && form.get('type')?.touched" class="invalid-feedback">
+      Wybierz typ rezerwacji.
+    </div>
   </div>
+
   <div class="mb-3">
-    <label>Imię:</label>
-    <input type="text" formControlName="patientName" class="form-control">
+    <label for="patientName" class="form-label">Imię:</label>
+    <input
+      id="patientName"
+      type="text"
+      formControlName="patientName"
+      class="form-control"
+      [class.is-invalid]="form.get('patientName')?.invalid && form.get('patientName')?.touched"
+    >
+    <div *ngIf="form.get('patientName')?.invalid && form.get('patientName')?.touched" class="invalid-feedback">
+      Podaj imię pacjenta.
+    </div>
   </div>
+
   <div class="mb-3">
-    <label>Nazwisko:</label>
-    <input type="text" formControlName="patientSurname" class="form-control">
+    <label for="patientSurname" class="form-label">Nazwisko:</label>
+    <input
+      id="patientSurname"
+      type="text"
+      formControlName="patientSurname"
+      class="form-control"
+      [class.is-invalid]="form.get('patientSurname')?.invalid && form.get('patientSurname')?.touched"
+    >
+    <div *ngIf="form.get('patientSurname')?.invalid && form.get('patientSurname')?.touched" class="invalid-feedback">
+      Podaj nazwisko pacjenta.
+    </div>
   </div>
+
   <div class="mb-3">
-    <label>Płeć:</label>
-    <select formControlName="gender" class="form-select">
+    <label for="gender" class="form-label">Płeć:</label>
+    <select
+      id="gender"
+      formControlName="gender"
+      class="form-select"
+      [class.is-invalid]="form.get('gender')?.invalid && form.get('gender')?.touched"
+    >
       <option value="kobieta">Kobieta</option>
       <option value="mężczyzna">Mężczyzna</option>
       <option value="inny">Inny</option>
     </select>
+    <div *ngIf="form.get('gender')?.invalid && form.get('gender')?.touched" class="invalid-feedback">
+      Wybierz płeć pacjenta.
+    </div>
   </div>
+
   <div class="mb-3">
-    <label>Wiek:</label>
-    <input type="number" formControlName="age" class="form-control">
+    <label for="age" class="form-label">Wiek:</label>
+    <input
+      id="age"
+      type="number"
+      formControlName="age"
+      class="form-control"
+      [class.is-invalid]="form.get('age')?.invalid && form.get('age')?.touched"
+    >
+    <div *ngIf="form.get('age')?.invalid && form.get('age')?.touched" class="invalid-feedback">
+      Podaj poprawny wiek pacjenta (minimum 16 lat).
+    </div>
   </div>
+
   <div class="mb-3">
-    <label>Szczegóły:</label>
-    <textarea formControlName="details" class="form-control"></textarea>
+    <label for="details" class="form-label">Szczegóły:</label>
+    <textarea id="details" formControlName="details" class="form-control"></textarea>
   </div>
+
   <div class="d-flex justify-content-between">
-      <button (click)="save()" class="btn btn-primary" [disabled]="form.invalid">Dodaj do koszyka</button>
-      <button (click)="cancel()" class="btn btn-secondary">Anuluj</button>
-  </div> 
+    <button type="submit" class="btn btn-primary" [disabled]="form.invalid">Dodaj do koszyka</button>
+    <button type="button" (click)="cancel()" class="btn btn-secondary">Anuluj</button>
+  </div>
 </form>

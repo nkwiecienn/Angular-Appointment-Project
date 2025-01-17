@@ -39,6 +39,8 @@
           [class.current-day]="isCurrentDay(day)"
           [class.current-time]="isCurrentTime(slotIndex, day)"
           [class.available]="isAvailable(slotIndex, day)"
+          [class.clickable]="isSlotClickable(slotIndex, day)"
+          (click)="onSlotClick(slotIndex, day)"
         >
           <ng-container *ngIf="day.slots[slotIndex] as slot">
             <!-- Komponent blokowy -->
@@ -54,13 +56,13 @@
     <button class="btn btn-outline-secondary" (click)="goToNextHours()">Godziny →</button>
   </div>
 
-  <!-- <div *ngIf="selectedSlot" class="reservation-form-overlay">
+  <div *ngIf="selectedSlot" class="reservation-form-overlay">
     <app-reservation
       [date]="selectedSlot.date"
       [startTime]="selectedSlot.startTime"
       [validateSlots]="areSlotsAvailable.bind(this)"
       (close)="closeReservationForm()"
     ></app-reservation>
-  </div> -->
+  </div>
 
 </div>

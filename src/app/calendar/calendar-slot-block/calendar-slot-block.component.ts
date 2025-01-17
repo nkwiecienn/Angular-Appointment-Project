@@ -2,13 +2,14 @@ import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TimeSlot } from '../models/time-slot';
 import { ReservationService } from '../../services/reservation.service';
+import { Reservation } from '../../reservation/models/reservation';
 
 @Component({
   standalone: true,
   imports: [CommonModule],
   selector: 'app-calendar-slot-block',
   templateUrl: './calendar-slot-block.component.html',
-  styleUrls: ['./calendar-slot-block.component.css']
+  styleUrls: ['./calendar-slot-block.component.css'],
 })
 export class CalendarSlotBlockComponent {
   @Input() slot!: TimeSlot;
@@ -33,11 +34,13 @@ export class CalendarSlotBlockComponent {
     }
 
     if (this.slot.isReserved && this.slot.reservationId) {
-      if (this.reservationService.getReservationById(this.slot.reservationId)) {
-        return 'reserved-' + this.reservationService.getReservationById(this.slot.reservationId)?.type;
-      } else {
-        return 'reserved-default';
-      }
+      let cssClass = 'reserved-default';
+      this.reservationService.getReservationById(this.slot.reservationId).subscribe(reservation => {
+        if (reservation) {
+          cssClass = `reserved-${reservation.type}`;
+        }
+      });
+      return cssClass;
     }
 
     return 'free-slot';
@@ -47,16 +50,17 @@ export class CalendarSlotBlockComponent {
     if (!this.slot.reservationId) {
       return 'Brak rezerwacji';
     }
-  
-    const reservation = this.reservationService.getReservationById(this.slot.reservationId);
-    if (reservation) {
-      return `
-        Pacjent: ${reservation.patientName} ${reservation.patientSurname}<br>
-        Typ: ${reservation.type}<br>
-        Szczegóły: ${reservation.details || 'Brak'}
-      `;
-    }
-  
-    return 'Nie znaleziono szczegółów rezerwacji';
+
+    let details = 'Nie znaleziono szczegółów rezerwacji';
+    this.reservationService.getReservationById(this.slot.reservationId).subscribe(reservation => {
+      if (reservation) {
+        details = `
+          <strong>Pacjent:</strong> ${reservation.patientName} ${reservation.patientSurname}<br>
+          <strong>Typ:</strong> ${reservation.type}<br>
+          <strong>Szczegóły:</strong> ${reservation.details || 'Brak'}
+        `;
+      }
+    });
+    return details;
   }
 }

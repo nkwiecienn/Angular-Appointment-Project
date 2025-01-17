@@ -9,7 +9,7 @@ import { Reservation } from './models/reservation';
   selector: 'app-reservation',
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './reservation.component.html',
-  styleUrls: ['./reservation.component.css']
+  styleUrls: ['./reservation.component.css'],
 })
 export class ReservationComponent {
   @Input() date!: string;
@@ -28,15 +28,14 @@ export class ReservationComponent {
       patientSurname: ['', Validators.required],
       gender: ['kobieta', Validators.required],
       age: [18, [Validators.required, Validators.min(16)]],
-      details: ['']
+      details: [''],
     });
-
   }
 
   save(): void {
     if (this.form.valid) {
       const newReservation: Reservation = {
-        id: 0, // Automatycznie ustawiane w serwisie
+        id: 0, // Automatycznie ustawiane w backendzie
         date: this.date,
         startTime: this.startTime,
         endTime: this.calculateEndTime(this.startTime, this.form.value.length),
@@ -48,17 +47,24 @@ export class ReservationComponent {
         age: this.form.value.age,
         details: this.form.value.details,
         isCanceled: false,
-        isReserved: false
+        isReserved: false,
       };
 
       const length = this.form.get('length')?.value;
 
       // Sprawdzenie dostępności slotów
       if (this.validateSlots(length)) {
-        this.reservationService.addReservation(newReservation);
-        alert('Rezerwacja została zapisana.');
-        this.form.reset();
-        this.close.emit();
+        this.reservationService.addReservation(newReservation).subscribe({
+          next: (response) => {
+            alert('Rezerwacja została zapisana.');
+            this.form.reset();
+            this.close.emit();
+          },
+          error: (err) => {
+            console.error('Błąd podczas zapisu rezerwacji:', err);
+            alert('Wystąpił błąd podczas zapisu rezerwacji. Spróbuj ponownie.');
+          },
+        });
       } else {
         this.slotsAvailable = false; // Zmień stan flagi walidacji
         alert('Nie wszystkie wymagane sloty są dostępne.');

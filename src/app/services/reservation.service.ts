@@ -1,81 +1,107 @@
-import { EventEmitter, Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { Reservation } from '../reservation/models/reservation';
+import { Injectable, EventEmitter } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { SlotService } from './slot.service';
+import { Observable, BehaviorSubject } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { Reservation } from '../reservation/models/reservation';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ReservationService {
-  private reservationUrl = "assets/data/reservation.json"; 
+  private baseUrl = 'https://localhost:7194/api/Reservations';
   private reservations$: BehaviorSubject<Reservation[]> = new BehaviorSubject<Reservation[]>([]);
   public reservationsUpdated: EventEmitter<void> = new EventEmitter<void>();
 
-  constructor(private http: HttpClient, private slotService: SlotService) {
-    this.loadReservations();
-  }
+  constructor(private http: HttpClient) {}
 
-  private loadReservations(): void {
-    this.http.get<{ reservations: Reservation[] }>(this.reservationUrl).subscribe((data) => {
-      this.reservations$.next(data.reservations || []);
+  // Pobierz wszystkie rezerwacje
+  loadReservations(): void {
+    this.http.get<Reservation[]>(this.baseUrl).subscribe((reservations) => {
+      this.reservations$.next(reservations);
+      this.reservationsUpdated.emit();
     });
   }
 
+  // Pobierz obserwowalne rezerwacje
   getReservations(): Observable<Reservation[]> {
     return this.reservations$.asObservable();
   }
 
-  addReservation(newReservation: Reservation): void {
-    const currentReservations = this.reservations$.getValue();
-    const maxId = currentReservations.length > 0
-      ? Math.max(...currentReservations.map(r => r.id))
-      : 0;
-    newReservation.id = maxId + 1;
-    this.reservations$.next([...currentReservations, newReservation]);
-    this.reservationsUpdated.emit();
+  // Pobierz rezerwację po ID
+  getReservationById(id: number): Observable<Reservation> {
+    return this.http.get<Reservation>(`${this.baseUrl}/${id}`);
   }
 
-  getReservationById(id: number): Reservation | undefined {
-    return this.reservations$.getValue().find(reservation => reservation.id === id);
+  // Dodaj nową rezerwację
+  addReservation(newReservation: Reservation): Observable<Reservation> {
+    const dto = this.mapReservationToDto(newReservation);
+    return this.http.post<Reservation>(this.baseUrl, dto).pipe(
+      map((createdReservation) => {
+        this.loadReservations(); // Odśwież listę rezerwacji
+        return createdReservation;
+      })
+    );
   }
 
-  cancelReservation(id: number): void {
-    const reservation = this.getReservationById(id);
-    if (reservation) {
-      reservation.isCanceled = true;
-    }
+  // Zaktualizuj istniejącą rezerwację
+  updateReservation(id: number, updatedReservation: Partial<Reservation>): Observable<void> {
+    return this.http.put<void>(`${this.baseUrl}/${id}`, updatedReservation).pipe(
+      map(() => {
+        this.loadReservations(); // Odśwież listę rezerwacji
+      })
+    );
   }
 
-  getPendingReservations(): Reservation[] {
-    return this.reservations$.getValue().filter(reservation => !reservation.isReserved);
+  // Usuń rezerwację
+  deleteReservation(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/${id}`).pipe(
+      map(() => {
+        this.loadReservations(); // Odśwież listę rezerwacji
+      })
+    );
   }
-  
-  removeReservation(reservationId: number): void {
-    const currentReservations = this.reservations$.getValue();
-    this.reservations$.next(currentReservations.filter(res => res.id !== reservationId));
+
+  // Pobierz rezerwacje oczekujące
+  getPendingReservations(): Observable<Reservation[]> {
+    return this.getReservations().pipe(
+      map((reservations) => reservations.filter((res) => !res.isReserved))
+    );
   }
-  
-  reserveAllPending(): void {
-    // const currentReservations = this.reservations$.getValue();
-    // const updatedReservations = currentReservations.map(reservation => {
-    //   if (!reservation.isReserved) {
-    //     reservation.isReserved = true;
-    //     this.assignReservationToSlots(reservation);
-    //   }
-    //   return reservation;
-    // });
-    // this.reservations$.next(updatedReservations);
+
+  // Mapowanie DTO -> Model
+  private mapDtoToReservation(dto: any): Reservation {
+    return {
+      id: dto.id,
+      date: dto.date,
+      startTime: dto.startTime,
+      endTime: dto.endTime,
+      length: dto.length,
+      type: dto.type,
+      patientName: dto.patientName,
+      patientSurname: dto.patientSurname,
+      gender: dto.gender,
+      age: dto.age,
+      details: dto.details,
+      isCanceled: dto.isCanceled,
+      isReserved: dto.isReserved,
+    };
   }
-  
-  
-  private assignReservationToSlots(reservation: Reservation): void {
-    // const slots = this.slotService.getSlotsForReservation(reservation);
-    // slots.forEach(slot => {
-    //   slot.isReserved = true;
-    //   slot.reservationId = reservation.id;
-    // });
+
+  // Mapowanie Model -> DTO
+  private mapReservationToDto(reservation: Reservation): any {
+    return {
+      id: reservation.id,
+      date: reservation.date,
+      startTime: reservation.startTime,
+      endTime: reservation.endTime,
+      length: reservation.length,
+      type: reservation.type,
+      gender: reservation.gender,
+      age: reservation.age,
+      details: reservation.details,
+      isCanceled: reservation.isCanceled,
+      isReserved: reservation.isReserved,
+      userId: 1, // TODO: Dynamically set the user ID
+    };
   }
-  
 }
- 

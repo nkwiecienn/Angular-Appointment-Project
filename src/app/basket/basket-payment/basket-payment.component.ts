@@ -22,8 +22,9 @@ export class BasketPaymentComponent {
       return;
     }
 
-    this.reservationService.reserveAllPending();
-    alert('Płatność zakończona.');
-    this.paymentCompleted.emit();
+    this.reservationService.reserveAllPending().subscribe(() => {
+      alert('Płatność zakończona.');
+      this.paymentCompleted.emit();
+    });
   }
 }

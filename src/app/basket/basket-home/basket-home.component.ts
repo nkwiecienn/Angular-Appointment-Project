@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BasketReservationsComponent } from '../basket-reservations/basket-reservations.component';
 import { BasketPaymentComponent } from '../basket-payment/basket-payment.component';
@@ -11,13 +11,16 @@ import { ReservationService } from '../../services/reservation.service';
   templateUrl: './basket-home.component.html',
   styleUrls: ['./basket-home.component.css']
 })
-export class BasketHomeComponent {
+export class BasketHomeComponent implements OnInit {
   showPayment: boolean = false;
+  hasPendingReservations: boolean = false;
 
   constructor(private reservationService: ReservationService) {}
 
-  get hasPendingReservations(): boolean {
-    return this.reservationService.getPendingReservations().length > 0;
+  ngOnInit(): void {
+    this.reservationService.getPendingReservations().subscribe(pendingReservations => {
+      this.hasPendingReservations = pendingReservations.length > 0;
+    });
   }
 
   togglePayment(): void {

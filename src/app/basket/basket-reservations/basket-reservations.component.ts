@@ -22,6 +22,8 @@ export class BasketReservationsComponent implements OnInit {
   }
 
   removeReservation(reservationId: number): void {
-    this.reservationService.removeReservation(reservationId);
+    this.reservationService.deleteReservation(reservationId).subscribe(() => {
+      this.pendingReservations = this.pendingReservations.filter(res => res.id !== reservationId);
+    });
   }
 }

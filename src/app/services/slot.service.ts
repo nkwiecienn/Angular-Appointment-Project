@@ -23,6 +23,16 @@ export class SlotService {
     return this.http.get<TimeSlot[]>(`${this.baseUrl}/TimeSlot?date=${date}`);
   }
 
+  getSlotsForReservation(reservation: Reservation): TimeSlot[] {
+    return this.slots.filter((slot) => {
+      const isInDate = slot.date === reservation.date;
+      const isInTimeRange =
+        slot.startTime >= reservation.startTime && slot.endTime <= reservation.endTime;
+
+      return isInDate && isInTimeRange;
+    });
+  }
+
   // Zarezerwuj slot, przypisując do niego reservationId
   reserveSlot(slotId: number, reservationId: number): Observable<any> {
     return this.http.put(`${this.baseUrl}/TimeSlot/${slotId}/reserve`, {
