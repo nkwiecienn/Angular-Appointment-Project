@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TimeSlot } from '../models/time-slot';
 import { ReservationService } from '../../services/reservation.service';
@@ -11,56 +11,68 @@ import { Reservation } from '../../reservation/models/reservation';
   templateUrl: './calendar-slot-block.component.html',
   styleUrls: ['./calendar-slot-block.component.css'],
 })
-export class CalendarSlotBlockComponent {
+export class CalendarSlotBlockComponent implements OnInit {
   @Input() slot!: TimeSlot;
 
   showTooltip = false;
+  reservationDetails: Reservation | null = null; // Szczegóły rezerwacji
 
   constructor(private reservationService: ReservationService) {}
 
-  onMouseEnter() {
+  ngOnInit(): void {
+    if (this.slot.isReserved && this.slot.reservationId) {
+      this.fetchReservationDetails();
+    }
+  }
+
+  private fetchReservationDetails(): void {
+    if (this.slot.reservationId) {
+      this.reservationService.getReservationById(this.slot.reservationId).subscribe({
+        next: (reservation) => {
+          this.reservationDetails = reservation;
+        },
+        error: (err) => {
+          console.error(`Błąd pobierania rezerwacji ID ${this.slot.reservationId}:`, err);
+        },
+      });
+    }
+  }
+
+  onMouseEnter(): void {
     if (this.slot.isReserved) {
       this.showTooltip = true;
     }
   }
 
-  onMouseLeave() {
+  onMouseLeave(): void {
     this.showTooltip = false;
   }
 
   getCssClass(): string {
+    if(!this.reservationDetails?.isReserved) {
+      return 'free-slot';
+    }
+
     if (this.slot.isPast && this.slot.isReserved) {
       return 'past-block';
     }
 
-    if (this.slot.isReserved && this.slot.reservationId) {
-      let cssClass = 'reserved-default';
-      this.reservationService.getReservationById(this.slot.reservationId).subscribe(reservation => {
-        if (reservation) {
-          cssClass = `reserved-${reservation.type}`;
-        }
-      });
-      return cssClass;
+    if (this.slot.isReserved && this.reservationDetails?.isReserved) {
+      return `reserved-${this.reservationDetails.type}`;
     }
 
-    return 'free-slot';
+    return this.slot.isReserved ? 'reserved-default' : 'free-slot';
   }
 
-  getReservationDetails(): string {
-    if (!this.slot.reservationId) {
-      return 'Brak rezerwacji';
+  getReservationTooltip(): string {
+    if (!this.reservationDetails) {
+      return 'Ładowanie szczegółów...';
     }
 
-    let details = 'Nie znaleziono szczegółów rezerwacji';
-    this.reservationService.getReservationById(this.slot.reservationId).subscribe(reservation => {
-      if (reservation) {
-        details = `
-          <strong>Pacjent:</strong> ${reservation.patientName} ${reservation.patientSurname}<br>
-          <strong>Typ:</strong> ${reservation.type}<br>
-          <strong>Szczegóły:</strong> ${reservation.details || 'Brak'}
-        `;
-      }
-    });
-    return details;
+    return `
+      <strong>Pacjent:</strong> ${this.reservationDetails.patientName} ${this.reservationDetails.patientSurname}<br>
+      <strong>Typ:</strong> ${this.reservationDetails.type}<br>
+      <strong>Szczegóły:</strong> ${this.reservationDetails.details || 'Brak'}
+    `;
   }
 }

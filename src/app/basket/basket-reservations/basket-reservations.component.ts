@@ -16,14 +16,21 @@ export class BasketReservationsComponent implements OnInit {
   constructor(private reservationService: ReservationService) {}
 
   ngOnInit(): void {
-    this.reservationService.getReservations().subscribe(reservations => {
-      this.pendingReservations = reservations.filter(res => !res.isReserved);
+    this.loadPendingReservations();
+    this.reservationService.reservationsUpdated.subscribe(() => {
+      this.loadPendingReservations();
+    });
+  }
+
+  private loadPendingReservations(): void {
+    this.reservationService.getPendingReservations().subscribe(reservations => {
+      this.pendingReservations = reservations;
     });
   }
 
   removeReservation(reservationId: number): void {
     this.reservationService.deleteReservation(reservationId).subscribe(() => {
-      this.pendingReservations = this.pendingReservations.filter(res => res.id !== reservationId);
+      this.loadPendingReservations(); // Odśwież dane po usunięciu
     });
   }
 }

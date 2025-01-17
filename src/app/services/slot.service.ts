@@ -1,76 +1,99 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { TimeSlot } from '../calendar/models/time-slot';
 import { Reservation } from '../reservation/models/reservation';
+import { TimeSlot } from '../calendar/models/time-slot';
+import { ReservationService } from './reservation.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SlotService {
-  private baseUrl = 'https://localhost:7194/api'; // URL backendu
-  private slots: TimeSlot[] = [];
+  constructor(private reservationService: ReservationService) {}
 
-  constructor(private http: HttpClient) {}
+  /**
+   * Generuj sloty dla wybranego dnia na podstawie rezerwacji i zakresu godzin.
+   */
+  generateSlotsForDay(
+    date: string,
+    reservations: Reservation[],
+    startHour: number,
+    endHour: number,
+    slotLength: number
+  ): TimeSlot[] {
+    const slots: TimeSlot[] = [];
+    const startMinutes = startHour * 60;
+    const endMinutes = endHour * 60;
 
-  // Pobierz wszystkie sloty
-  getSlots(): Observable<TimeSlot[]> {
-    return this.http.get<TimeSlot[]>(`${this.baseUrl}/TimeSlot`);
+    for (let minutes = startMinutes; minutes < endMinutes; minutes += slotLength) {
+      const slotStart = this.formatHHMM(minutes);
+      const slotEnd = this.formatHHMM(minutes + slotLength);
+      const reservation = reservations.find(
+        (r) => r.date === date && r.startTime === slotStart
+      );
+
+      slots.push({
+        date,
+        startTime: slotStart,
+        endTime: slotEnd,
+        isReserved: !!reservation,
+        isPast: new Date(`${date}T${slotStart}`) < new Date(),
+        reservationId: reservation?.id,
+      });
+    }
+
+    return slots;
   }
 
-  // Pobierz sloty dla konkretnej daty
-  getSlotsForDate(date: string): Observable<TimeSlot[]> {
-    return this.http.get<TimeSlot[]>(`${this.baseUrl}/TimeSlot?date=${date}`);
+  /**
+   * Generuj sloty dla całego tygodnia.
+   */
+  generateSlotsForWeek(
+    startDate: string,
+    reservations: Reservation[],
+    startHour: number,
+    endHour: number,
+    slotLength: number
+  ): TimeSlot[] {
+    const slots: TimeSlot[] = [];
+    const startOfWeek = new Date(startDate);
+
+    for (let i = 0; i < 7; i++) {
+      const currentDate = new Date(startOfWeek);
+      currentDate.setDate(startOfWeek.getDate() + i);
+      const dateStr = currentDate.toISOString().split('T')[0];
+
+      const dailySlots = this.generateSlotsForDay(dateStr, reservations, startHour, endHour, slotLength);
+      slots.push(...dailySlots);
+    }
+
+    return slots;
   }
 
-  getSlotsForReservation(reservation: Reservation): TimeSlot[] {
-    return this.slots.filter((slot) => {
-      const isInDate = slot.date === reservation.date;
-      const isInTimeRange =
-        slot.startTime >= reservation.startTime && slot.endTime <= reservation.endTime;
-
-      return isInDate && isInTimeRange;
-    });
-  }
-
-  // Zarezerwuj slot, przypisując do niego reservationId
-  reserveSlot(slotId: number, reservationId: number): Observable<any> {
-    return this.http.put(`${this.baseUrl}/TimeSlot/${slotId}/reserve`, {
-      reservationId,
-    });
-  }
-
-  // Zwolnij slot, ustawiając isReserved na false i usuwając reservationId
-  releaseSlot(slotId: number): Observable<any> {
-    return this.http.put(`${this.baseUrl}/TimeSlot/${slotId}/release`, {});
-  }
-
-  // Pobierz wszystkie sloty z backendu i zapisz je lokalnie
-  initializeSlots(): Observable<TimeSlot[]> {
-    return new Observable<TimeSlot[]>((observer) => {
-      this.http.get<TimeSlot[]>(this.baseUrl).subscribe({
-        next: (data) => {
-          this.slots = data; // Zapisz sloty w pamięci
-          observer.next(data);
-          observer.complete();
-        },
-        error: (err) => {
-          observer.error(err);
-        },
+  /**
+   * Pobierz rezerwacje i wygeneruj sloty dla danego dnia.
+   */
+  getSlotsForDate(date: string, startHour: number, endHour: number, slotLength: number): Promise<TimeSlot[]> {
+    return new Promise((resolve) => {
+      this.reservationService.getReservations().subscribe((reservations) => {
+        const slots = this.generateSlotsForDay(date, reservations, startHour, endHour, slotLength);
+        resolve(slots);
       });
     });
   }
 
-  // Pobierz sloty dla tygodnia (filtruj lokalnie)
-  getSlotsForWeek(startDate: string): TimeSlot[] {
-    const startOfWeek = new Date(startDate);
-    const endOfWeek = new Date(startOfWeek);
-    endOfWeek.setDate(startOfWeek.getDate() + 7);
+  /**
+   * Pomocnicza metoda do obliczania minut na podstawie czasu w formacie HH:MM
+   */
+  private calculateMinutes(time: string): number {
+    const [hours, minutes] = time.split(':').map(Number);
+    return hours * 60 + minutes;
+  }
 
-    // Filtrowanie slotów w pamięci
-    return this.slots.filter((slot) => {
-      const slotDate = new Date(slot.date);
-      return slotDate >= startOfWeek && slotDate < endOfWeek;
-    });
+  /**
+   * Pomocnicza metoda do formatowania minut w format HH:MM
+   */
+  private formatHHMM(minutes: number): string {
+    const hours = Math.floor(minutes / 60).toString().padStart(2, '0');
+    const mins = (minutes % 60).toString().padStart(2, '0');
+    return `${hours}:${mins}`;
   }
 }

@@ -9,8 +9,7 @@
   <div 
     class="slot-tooltip" 
     *ngIf="showTooltip"
+    [innerHTML]="getReservationTooltip()"
   >
-    <strong>Szczegóły wizyty</strong><br>
-    <div [innerHTML]="getReservationDetails()"></div>
   </div>
 </div>

@@ -17,14 +17,13 @@ export class BasketPaymentComponent {
   constructor(private reservationService: ReservationService) {}
 
   processPayment(): void {
-    if (this.blikCode.length !== 6) {
-      alert('Wprowadź poprawny kod BLIK (6 cyfr).');
-      return;
+    if (this.blikCode.length === 6) {
+      this.reservationService.reserveAllPendingReservations().subscribe(() => {
+        alert('Płatność zakończona sukcesem!');
+        this.paymentCompleted.emit();
+      });
+    } else {
+      alert('Kod BLIK musi mieć 6 cyfr.');
     }
-
-    this.reservationService.reserveAllPending().subscribe(() => {
-      alert('Płatność zakończona.');
-      this.paymentCompleted.emit();
-    });
   }
 }

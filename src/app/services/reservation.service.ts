@@ -1,7 +1,7 @@
 import { Injectable, EventEmitter } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, BehaviorSubject } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, BehaviorSubject, throwError } from 'rxjs';
+import { catchError, map, switchMap } from 'rxjs/operators';
 import { Reservation } from '../reservation/models/reservation';
 
 @Injectable({
@@ -61,12 +61,27 @@ export class ReservationService {
     );
   }
 
-  // Pobierz rezerwacje oczekujące
+  // Pobierz rezerwacje oczekujące (nieopłacone)
   getPendingReservations(): Observable<Reservation[]> {
     return this.getReservations().pipe(
       map((reservations) => reservations.filter((res) => !res.isReserved))
     );
   }
+
+  // Zarezerwuj wszystkie oczekujące rezerwacje
+  reserveAllPendingReservations(): Observable<void> {
+    return this.getPendingReservations().pipe(
+      map((pendingReservations) => pendingReservations.map((res) => res.id)),
+      switchMap((reservationIds) =>
+        this.http.put<void>(`${this.baseUrl}/reserveAll`, reservationIds)
+      ),
+      catchError((error) => {
+        console.error('Błąd podczas rezerwacji:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+  
 
   // Mapowanie DTO -> Model
   private mapDtoToReservation(dto: any): Reservation {
@@ -101,7 +116,7 @@ export class ReservationService {
       details: reservation.details,
       isCanceled: reservation.isCanceled,
       isReserved: reservation.isReserved,
-      userId: 1, // TODO: Dynamically set the user ID
+      userId: 1, // TODO: Ustawienie dynamicznego ID użytkownika
     };
   }
 }

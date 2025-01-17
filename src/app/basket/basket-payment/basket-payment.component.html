@@ -1,8 +1,9 @@
 <div class="payment-form">
-    <h3>Płatność</h3>
-    <label for="blikCode">Kod BLIK:</label>
-    <input type="text" id="blikCode" [(ngModel)]="blikCode" maxlength="6" class="form-control mb-3" />
-  
-    <button class="btn btn-success" (click)="processPayment()">Zapłać</button>
+  <h3>Płatność</h3>
+  <label for="blikCode">Kod BLIK:</label>
+  <input type="text" id="blikCode" [(ngModel)]="blikCode" maxlength="6" class="form-control mb-3" />
+  <div *ngIf="blikCode.length > 0 && blikCode.length !== 6" class="text-danger">
+    Kod BLIK musi mieć 6 cyfr.
   </div>
-  
+  <button class="btn btn-success" (click)="processPayment()">Zapłać</button>
+</div>

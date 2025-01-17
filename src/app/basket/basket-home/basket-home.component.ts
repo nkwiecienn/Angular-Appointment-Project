@@ -18,8 +18,15 @@ export class BasketHomeComponent implements OnInit {
   constructor(private reservationService: ReservationService) {}
 
   ngOnInit(): void {
+    this.reservationService.loadReservations(); // Odśwież dane
     this.reservationService.getPendingReservations().subscribe(pendingReservations => {
       this.hasPendingReservations = pendingReservations.length > 0;
+    });
+
+    this.reservationService.reservationsUpdated.subscribe(() => {
+      this.reservationService.getPendingReservations().subscribe(pendingReservations => {
+        this.hasPendingReservations = pendingReservations.length > 0;
+      });
     });
   }
 
