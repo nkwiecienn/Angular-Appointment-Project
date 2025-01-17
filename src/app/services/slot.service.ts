@@ -34,7 +34,7 @@ export class SlotService {
         date,
         startTime: slotStart,
         endTime: slotEnd,
-        isReserved: !!reservation,
+        isReserved: reservation ? reservation.isReserved : false, //uwu
         isPast: new Date(`${date}T${slotStart}`) < new Date(),
         reservationId: reservation?.id,
       });

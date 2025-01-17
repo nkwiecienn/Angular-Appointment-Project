@@ -42,6 +42,7 @@ export class CalendarViewComponent implements OnInit {
   ngOnInit(): void {
     this.todayStr = new Date().toISOString().split('T')[0];
     this.startOfWeek = getMondayOf(new Date());
+    this.reservationService.loadReservations(); 
 
     // Pobierz dane wymagane do generowania kalendarza
     this.loadData();
