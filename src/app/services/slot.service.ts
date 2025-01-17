@@ -22,26 +22,32 @@ export class SlotService {
     const slots: TimeSlot[] = [];
     const startMinutes = startHour * 60;
     const endMinutes = endHour * 60;
-
+  
     for (let minutes = startMinutes; minutes < endMinutes; minutes += slotLength) {
       const slotStart = this.formatHHMM(minutes);
       const slotEnd = this.formatHHMM(minutes + slotLength);
+  
+      // Sprawdź, czy slot należy do rezerwacji
       const reservation = reservations.find(
-        (r) => r.date === date && r.startTime === slotStart
+        (r) =>
+          r.date === date &&
+          this.calculateMinutes(r.startTime) <= minutes &&
+          this.calculateMinutes(r.endTime) > minutes
       );
-
+  
       slots.push({
         date,
         startTime: slotStart,
         endTime: slotEnd,
-        isReserved: reservation ? reservation.isReserved : false, //uwu
+        isReserved: !!reservation,
         isPast: new Date(`${date}T${slotStart}`) < new Date(),
         reservationId: reservation?.id,
       });
     }
-
+  
     return slots;
   }
+  
 
   /**
    * Generuj sloty dla całego tygodnia.

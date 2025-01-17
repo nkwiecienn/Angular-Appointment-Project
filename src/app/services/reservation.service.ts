@@ -1,6 +1,6 @@
 import { Injectable, EventEmitter } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, BehaviorSubject, throwError } from 'rxjs';
+import { Observable, BehaviorSubject, throwError, forkJoin } from 'rxjs';
 import { catchError, map, switchMap } from 'rxjs/operators';
 import { Reservation } from '../reservation/models/reservation';
 
@@ -69,12 +69,32 @@ export class ReservationService {
   }
 
   // Zarezerwuj wszystkie oczekujące rezerwacje
+  // reserveAllPendingReservations(): Observable<void> {
+  //   return this.getPendingReservations().pipe(
+  //     map((pendingReservations) => pendingReservations.map((res) => res.id)),
+  //     switchMap((reservationIds) =>
+  //       this.http.put<void>(`${this.baseUrl}/reserveAll`, reservationIds)
+  //     ),
+  //     catchError((error) => {
+  //       console.error('Błąd podczas rezerwacji:', error);
+  //       return throwError(() => error);
+  //     })
+  //   );
+  // }
+  
   reserveAllPendingReservations(): Observable<void> {
     return this.getPendingReservations().pipe(
-      map((pendingReservations) => pendingReservations.map((res) => res.id)),
-      switchMap((reservationIds) =>
-        this.http.put<void>(`${this.baseUrl}/reserveAll`, reservationIds)
-      ),
+      switchMap((pendingReservations) => {
+        // Dla każdej rezerwacji aktualizujemy isReserved na true
+        const updateRequests = pendingReservations.map((reservation) =>
+          this.updateReservation(reservation.id, { isReserved: true })
+        );
+  
+        return forkJoin(updateRequests); // Uruchamiamy wszystkie żądania równolegle
+      }),
+      map(() => {
+        this.loadReservations(); // Odświeżamy listę rezerwacji
+      }),
       catchError((error) => {
         console.error('Błąd podczas rezerwacji:', error);
         return throwError(() => error);
