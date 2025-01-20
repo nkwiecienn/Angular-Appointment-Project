@@ -39,7 +39,7 @@
           [class.current-day]="isCurrentDay(day)"
           [class.current-time]="isCurrentTime(slotIndex, day)"
           [class.available]="isAvailable(slotIndex, day)"
-          [class.clickable]="isSlotClickable(slotIndex, day)"
+          [class.clickable]="isSlotClickable(slotIndex, day) "
           (click)="onSlotClick(slotIndex, day)"
         >
           <ng-container *ngIf="day.slots[slotIndex] as slot">

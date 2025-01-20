@@ -12,6 +12,7 @@ import { Availability } from '../../availability/models/availability';
 import { Reservation } from '../../reservation/models/reservation';
 import { TimeSlot } from '../models/time-slot';
 import { ReservationComponent } from '../../reservation/reservation.component';
+import { RoleService } from '../../services/role.service';
 
 @Component({
   standalone: true,
@@ -36,7 +37,8 @@ export class CalendarViewComponent implements OnInit {
     private slotService: SlotService,
     private reservationService: ReservationService,
     private absenceService: AbsenceService,
-    private availabilityService: AvailabilityService
+    private availabilityService: AvailabilityService,
+    public roleService: RoleService
   ) {}
 
   ngOnInit(): void {
@@ -163,7 +165,7 @@ export class CalendarViewComponent implements OnInit {
 
   public isSlotClickable(slotIndex: number, day: DaySchedule): boolean {
     const slot = day.slots[slotIndex];
-    return slot && !slot.isReserved && !slot.isPast && this.isAvailable(slotIndex, day) && !this.isAbsent(day);
+    return slot && !slot.isReserved && !slot.isPast && this.isAvailable(slotIndex, day) && !this.isAbsent(day) && this.roleService.isPatient();
   }
 
   private publicAreSlotsAvailable(slotIndex: number, day: DaySchedule, length: number = 30): boolean {
