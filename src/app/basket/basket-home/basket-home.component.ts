@@ -35,6 +35,8 @@ export class BasketHomeComponent implements OnInit {
   }
 
   onPaymentCompleted(): void {
-    this.showPayment = false;
+    this.showPayment = false; // Ukryj sekcję płatności
+    this.hasPendingReservations = false; // Resetuj flagę po zakończeniu płatności
+    this.reservationService.loadReservations(); // Odśwież rezerwacje
   }
-}
+}  

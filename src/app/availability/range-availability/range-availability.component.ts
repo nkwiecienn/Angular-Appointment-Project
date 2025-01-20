@@ -74,7 +74,7 @@ export class RangeAvailabilityComponent {
   
       daysControl.controls.forEach((ctrl, i) => {
         if (ctrl.value) {
-          selectedDays.push(this.daysOfWeekOptions[i].value - 1); // Dodanie wartości odpowiadającej dniowi tygodnia
+          selectedDays.push(this.daysOfWeekOptions[i].value); // Dodanie wartości odpowiadającej dniowi tygodnia
         }
       });
   

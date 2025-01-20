@@ -1,7 +1,8 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, DebugElement, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ReservationService } from '../../services/reservation.service';
+import { Console } from 'console';
 
 @Component({
   standalone: true,
@@ -16,29 +17,21 @@ export class BasketPaymentComponent {
 
   constructor(private reservationService: ReservationService) {}
 
-  isProcessing: boolean = false;
-
   processPayment(): void {
-    if (this.isProcessing) return; // Zapobiega wielokrotnemu uruchomieniu
-    this.isProcessing = true;
-  
     if (this.blikCode.length === 6) {
       this.reservationService.reserveAllPendingReservations().subscribe({
         next: () => {
           alert('Płatność zakończona sukcesem!');
-          this.paymentCompleted.emit();
-          this.isProcessing = false; // Resetuj flagę
+          this.paymentCompleted.emit(); // Emituj zdarzenie po udanym procesie
         },
-        error: () => {
-          alert('Wystąpił błąd podczas przetwarzania płatności.');
-          this.isProcessing = false; // Resetuj flagę w przypadku błędu
+        error: (err) => {
+          console.error('Błąd podczas płatności:', err);
+          alert('Nie udało się przetworzyć płatności.');
         },
       });
     } else {
       alert('Kod BLIK musi mieć 6 cyfr.');
-      this.isProcessing = false;
     }
   }
   
-
 }

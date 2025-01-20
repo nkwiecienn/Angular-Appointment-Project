@@ -10,6 +10,6 @@
   Zapłać
 </button>
 
-<div *ngIf="showPayment" class="mt-3">
+<div *ngIf="showPayment && hasPendingReservations" class="mt-3">
   <basket-payment (paymentCompleted)="onPaymentCompleted()"></basket-payment>
 </div>
