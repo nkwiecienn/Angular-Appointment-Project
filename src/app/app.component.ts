@@ -2,6 +2,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Component, Inject, PLATFORM_ID } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { RouterModule } from '@angular/router';
+import { AuthenticationService } from './services/authentication.service';
  
 @Component({
   selector: 'app-root',
@@ -12,11 +13,15 @@ import { RouterModule } from '@angular/router';
 export class AppComponent {
   title = 'paw-project';
 
-  constructor(private router: Router, @Inject(PLATFORM_ID) private platformId: Object) {}
+  constructor(
+    private router: Router, 
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private authService: AuthenticationService
+  ) {}
 
   get isLoggedIn(): boolean {
     if (isPlatformBrowser(this.platformId)) {
-      return !!localStorage.getItem('accessToken');
+      return !!localStorage.getItem('accessToken')
     }
     return false;
   }
@@ -25,7 +30,21 @@ export class AppComponent {
     return localStorage.getItem('email');
   }
 
-  logout() {
+  logout(): void {
+    this.authService.logout().subscribe({
+      next: () => {
+        this.clearSession();
+      },
+      error: () => {
+        this.clearSession(); // Wyczyść dane nawet jeśli żądanie zakończy się błędem
+      },
+    });
+  }
+
+  /**
+   * Wyczyść dane sesji i przekieruj na stronę logowania
+   */
+  private clearSession(): void {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('email');

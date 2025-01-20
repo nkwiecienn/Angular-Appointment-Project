@@ -26,24 +26,33 @@ export class LoginComponent {
     });
   }
 
+  // onSubmit() {
+  //   if (this.loginForm.valid) {
+  //     this.authService.login(this.loginForm.value).subscribe({
+  //       next: (response) => {
+  //         console.log('Login successful', response);
+  //         this.router.navigate(['/calendar']);
+  //       },
+  //       error: (error) => {
+  //         console.error('Login failed', error);
+  //         this.errorMessage = 'Nie udało się zalogować. Sprawdź dane logowania.';
+  //       },
+  //     });     
+  //   }
+  // }
   onSubmit() {
     if (this.loginForm.valid) {
+      console.log('Wysyłanie żądania logowania');
       this.authService.login(this.loginForm.value).subscribe({
         next: (response) => {
-          console.log('Login successful', response);
-          // Przechowaj token w localStorage
-          localStorage.setItem('accessToken', response.AccessToken);
-          localStorage.setItem('refreshToken', response.RefreshToken);
-          localStorage.setItem('email', this.loginForm.value.email);
-
-          // Przejdź do /calendar
+          console.log('Odpowiedź z logowania:', response);
           this.router.navigate(['/calendar']);
         },
         error: (error) => {
-          console.error('Login failed', error);
+          console.error('Błąd logowania:', error);
           this.errorMessage = 'Nie udało się zalogować. Sprawdź dane logowania.';
         },
-      });
+      });     
     }
   }
 }
