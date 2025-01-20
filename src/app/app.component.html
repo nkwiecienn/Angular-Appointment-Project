@@ -14,9 +14,9 @@
   <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
     <div class="navbar-nav" *ngIf="isLoggedIn">
       <a class="nav-item nav-link" routerLink="/calendar">Kalendarz</a>
-      <a class="nav-item nav-link" routerLink="/availability">Dostępność</a>
-      <a class="nav-item nav-link" routerLink="/absence">Absencja</a>
-      <a class="nav-item nav-link" routerLink="/basket">Koszyk</a>
+      <a class="nav-item nav-link" routerLink="/availability" *ngIf="roleService.isDoctor()">Dostępność</a>
+      <a class="nav-item nav-link" routerLink="/absence" *ngIf="roleService.isDoctor()">Absencja</a>
+      <a class="nav-item nav-link" routerLink="/basket" *ngIf="roleService.isPatient()">Koszyk</a>
     </div>
     <div class="navbar-nav ms-auto" *ngIf="isLoggedIn">
       <span class="navbar-text me-3">{{ userEmail }}</span>

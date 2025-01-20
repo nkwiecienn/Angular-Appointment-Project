@@ -67,20 +67,6 @@ export class ReservationService {
       map((reservations) => reservations.filter((res) => !res.isReserved))
     );
   }
-
-  // Zarezerwuj wszystkie oczekujące rezerwacje
-  // reserveAllPendingReservations(): Observable<void> {
-  //   return this.getPendingReservations().pipe(
-  //     map((pendingReservations) => pendingReservations.map((res) => res.id)),
-  //     switchMap((reservationIds) =>
-  //       this.http.put<void>(`${this.baseUrl}/reserveAll`, reservationIds)
-  //     ),
-  //     catchError((error) => {
-  //       console.error('Błąd podczas rezerwacji:', error);
-  //       return throwError(() => error);
-  //     })
-  //   );
-  // }
   
   reserveAllPendingReservations(): Observable<void> {
     return this.getPendingReservations().pipe(

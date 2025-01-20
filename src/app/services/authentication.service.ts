@@ -93,28 +93,10 @@ export class AuthenticationService {
 
   constructor(private http: HttpClient, private router: Router, @Inject(PLATFORM_ID) private platformId: object) {}
 
-  /**
-   * Rejestracja użytkownika
-   */
   register(model: RegisterModel): Observable<any> {
     return this.http.post(`${this.apiUrl}/register`, model);
   }
 
-  /**
-   * Logowanie użytkownika
-   */
-  // login(model: LoginModel): Observable<any> {
-  //   return this.http.post(`${this.apiUrl}/login`, model).pipe(
-  //     map((response: any) => {
-  //       const accessToken = response.accessToken; // Użyj poprawnych kluczy
-  //       const refreshToken = response.refreshToken;
-  //       console.log('Login response:', response);
-  //       console.log('Saving tokens from login:', { accessToken: response.accessToken, refreshToken: response.refreshToken, email: model.email });
-  //       this.saveTokens(accessToken, refreshToken, model.email);
-  //       return response;
-  //     })
-  //   );
-  // }
   login(model: LoginModel): Observable<any> {
     console.log('Wysyłanie żądania logowania dla:', model.email);
     return this.http.post(`${this.apiUrl}/login`, model).pipe(
@@ -122,15 +104,13 @@ export class AuthenticationService {
         console.log('Otrzymana odpowiedź:', response);
         if (response.accessToken && response.refreshToken) {
           this.saveTokens(response.accessToken, response.refreshToken, model.email);
+          this.saveUserInfo(response.role, response.userData.id, response.userData.firstName, response.userData.lastName);
         }
         return response;
       })
     );
   }
 
-  /**
-   * Odświeżanie tokena
-   */
   refresh(): Observable<any> {
     const email = localStorage.getItem('email');
     const refreshToken = localStorage.getItem('refreshToken');
@@ -151,21 +131,6 @@ export class AuthenticationService {
     );
   }
 
-  /**
-   * Wylogowanie użytkownika
-   */
-  // logout(): void {
-  //   const accessToken = localStorage.getItem('accessToken');
-  //   if (accessToken) {
-  //     this.http.post(`${this.apiUrl}/logout`, {}).subscribe({
-  //       next: () => this.clearSession(),
-  //       error: () => this.clearSession(),
-  //     });
-  //   } else {
-  //     this.clearSession();
-  //   }
-  // }
-
   logout(): Observable<void> {
     const accessToken = localStorage.getItem('accessToken');
     if (accessToken) {
@@ -179,23 +144,25 @@ export class AuthenticationService {
   }
   
 
-  /**
-   * Sprawdzenie, czy użytkownik jest zalogowany
-   */
   isAuthenticated(): boolean {
     const accessToken = localStorage.getItem('accessToken');
     return !!accessToken;
   }
 
-  /**
-   * Zapisz tokeny w localStorage
-   */
-  // private saveTokens(accessToken: string, refreshToken: string, email: string): void {
-  //   console.log('Saving tokens:', { accessToken, refreshToken, email });
-  //   localStorage.setItem('accessToken', accessToken);
-  //   localStorage.setItem('refreshToken', refreshToken);
-  //   localStorage.setItem('email', email);
-  // }
+  private saveUserInfo(role: number, id: number, firstName: string, lastName: string): void {
+    if (isPlatformBrowser(this.platformId)) {
+      try {
+        localStorage.setItem('role', role.toString());
+        localStorage.setItem('userId', id.toString());
+        localStorage.setItem('firstName', firstName);
+        localStorage.setItem('lastName', lastName);
+      } catch (error) {
+        console.error('Błąd zapisu danych użytkownika:', error);
+      }
+    } else {
+      console.warn('localStorage jest niedostępny w tym środowisku.');
+    }
+  }
 
   public saveTokens(accessToken: string, refreshToken: string, email: string): void {
     if (isPlatformBrowser(this.platformId)) {
@@ -214,9 +181,6 @@ export class AuthenticationService {
     }
   }
 
-  /**
-   * Wyczyść sesję i przekieruj użytkownika na stronę logowania
-   */
   private clearSession(): void {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');

@@ -7,7 +7,7 @@ export interface Reservation {
     type: "konsultacja" | "badanie" | "wizyta kontrolna" | "recepta" | "inny";
     patientName: string;
     patientSurname: string;
-    gender: 'kobieta' | 'mężczyzna' | `inny`;
+    gender: 'kobieta' | 'mężczyzna' | 'inny';
     age: number;
     details?: string;
     isCanceled: boolean;

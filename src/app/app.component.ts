@@ -3,6 +3,7 @@ import { Component, Inject, PLATFORM_ID } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { RouterModule } from '@angular/router';
 import { AuthenticationService } from './services/authentication.service';
+import { RoleService } from './services/role.service';
  
 @Component({
   selector: 'app-root',
@@ -16,7 +17,8 @@ export class AppComponent {
   constructor(
     private router: Router, 
     @Inject(PLATFORM_ID) private platformId: Object,
-    private authService: AuthenticationService
+    private authService: AuthenticationService,
+    public roleService: RoleService
   ) {}
 
   get isLoggedIn(): boolean {

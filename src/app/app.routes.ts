@@ -6,6 +6,7 @@ import { BasketHomeComponent } from './basket/basket-home/basket-home.component'
 import { RegisterComponent } from './auth/register/register.component';
 import { LoginComponent } from './auth/login/login.component';
 import { AuthGuard } from './auth.guard';
+import { RoleGuard } from './role.guard';
 
 export const routes: Routes = [
   {
@@ -19,12 +20,14 @@ export const routes: Routes = [
   {
     path: 'availability',
     component: AvailabilityHomeComponent,
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard, RoleGuard],
+    data: { allowedRoles: [2] }
   },
   {
     path: 'absence',
     component: AbsenceComponent,
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard, RoleGuard],
+    data: { allowedRoles: [2] }
   },
   {
     path: 'calendar',
@@ -34,7 +37,8 @@ export const routes: Routes = [
   {
     path: 'basket',
     component: BasketHomeComponent,
-    canActivate: [AuthGuard] 
+    canActivate: [AuthGuard, RoleGuard],
+    data: { allowedRoles: [1] } 
   },
   {
     path: '*', redirectTo: 'calendar', pathMatch: 'full' 

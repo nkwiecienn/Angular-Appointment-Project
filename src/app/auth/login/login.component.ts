@@ -13,7 +13,7 @@ import { Router, RouterModule } from '@angular/router';
 })
 export class LoginComponent {
   loginForm: FormGroup;
-  errorMessage: string | null = null; // Do wyświetlania błędów
+  errorMessage: string | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -26,20 +26,6 @@ export class LoginComponent {
     });
   }
 
-  // onSubmit() {
-  //   if (this.loginForm.valid) {
-  //     this.authService.login(this.loginForm.value).subscribe({
-  //       next: (response) => {
-  //         console.log('Login successful', response);
-  //         this.router.navigate(['/calendar']);
-  //       },
-  //       error: (error) => {
-  //         console.error('Login failed', error);
-  //         this.errorMessage = 'Nie udało się zalogować. Sprawdź dane logowania.';
-  //       },
-  //     });     
-  //   }
-  // }
   onSubmit() {
     if (this.loginForm.valid) {
       console.log('Wysyłanie żądania logowania');

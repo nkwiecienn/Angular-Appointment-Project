@@ -114,7 +114,7 @@ import { AuthenticationService } from './services/authentication.service';
 export const AuthInterceptor: HttpInterceptorFn = (req, next: HttpHandlerFn) => {
   const authService = inject(AuthenticationService);
   const accessToken = localStorage.getItem('accessToken');
-  console.log('Interceptor wywołany dla URL:', req.url);
+  // console.log('Interceptor wywołany dla URL:', req.url);
   
   if (accessToken) {
     req = req.clone({
@@ -122,7 +122,7 @@ export const AuthInterceptor: HttpInterceptorFn = (req, next: HttpHandlerFn) => 
         Authorization: `Bearer ${accessToken}`
       }
     });
-    console.log('Dodano token do nagłówka:', req.headers.get('Authorization'));
+    // console.log('Dodano token do nagłówka:', req.headers.get('Authorization'));
   }
 
   return next(req).pipe(

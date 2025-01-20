@@ -1,8 +1,8 @@
-- jak najeżdża się na timeslot to są dane z rezerwacji
-- jak kliknie się to można anulować
-- po dodaniu absencji jeżeli jest tam rezerwacja to jest ona zmieniana na odwołaną
-- role: lekarz może tylko wejść na obecność/absencje; użytkownik ma koszyk i może rezerwować
-- możliwośc wyboru lekarza
-- rezerwowanie tylko swoich rezerwacji
-- dodać moje rezerwacje
-- zmienić użytkownik i administrator na lekarz i pacjent
+1. role: lekarz może tylko wejść na obecność/absencje; użytkownik ma koszyk i może rezerwować
+2. rezerwowanie tylko swoich rezerwacji
+3. dodać moje rezerwacje
+4. jak najeżdża się na timeslot to są dane z rezerwacji
+5. możliwośc wyboru lekarza
+6. jak kliknie się to można anulować
+7. po dodaniu absencji jeżeli jest tam rezerwacja to jest ona zmieniana na odwołaną
+8. wyświetlanie jakoś ładniej
