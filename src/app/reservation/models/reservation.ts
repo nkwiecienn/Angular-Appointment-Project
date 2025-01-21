@@ -12,4 +12,5 @@ export interface Reservation {
     details?: string;
     isCanceled: boolean;
     isReserved: boolean;
+    userName?: string;
 }

@@ -38,9 +38,25 @@ export class CalendarSlotBlockComponent implements OnInit {
     }
   }
 
-  onMouseEnter(): void {
-    if (this.slot.isReserved) {
+  // onMouseEnter(): void {
+  //   if (this.slot.isReserved) {
+  //     this.showTooltip = true;
+  //   }
+  // }
+
+  onMouseEnter() {
+    if (this.slot.isReserved && this.slot.reservationId) {
       this.showTooltip = true;
+
+      // Pobierz szczegóły rezerwacji, w tym UserName
+      this.reservationService.getReservationById(this.slot.reservationId).subscribe({
+        next: (reservation) => {
+          this.reservationDetails = reservation;
+        },
+        error: () => {
+          this.reservationDetails = null;
+        },
+      });
     }
   }
 

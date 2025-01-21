@@ -1,4 +1,4 @@
-<div 
+<!-- <div 
   class="slot-block" 
   [ngClass]="getCssClass()"
   (mouseenter)="onMouseEnter()"
@@ -12,4 +12,26 @@
     [innerHTML]="getReservationTooltip()"
   >
   </div>
+</div> -->
+
+<div
+  class="slot-block"
+  [ngClass]="getCssClass()"
+  (mouseenter)="onMouseEnter()"
+  (mouseleave)="onMouseLeave()"
+>
+  <small>{{ slot.startTime }} - {{ slot.endTime }}</small>
+
+  <!-- Tooltip ze szczegółami -->
+  <div class="slot-tooltip" *ngIf="showTooltip">
+    <strong>Szczegóły wizyty</strong><br />
+    <span *ngIf="reservationDetails">
+      <strong>Pacjent:</strong> {{ reservationDetails.userName }}<br />
+      <strong>Typ:</strong> {{ reservationDetails.type }}<br />
+      <strong>Szczegóły:</strong>
+      {{ reservationDetails.details || 'Brak szczegółów' }}
+    </span>
+    <span *ngIf="!reservationDetails">Ładowanie szczegółów...</span>
+  </div>
 </div>
+
