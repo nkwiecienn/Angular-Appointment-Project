@@ -1,0 +1,13 @@
+<div class="user-reservations mt-4">
+    <h3>Twoje rezerwacje</h3>
+    <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+    <ul *ngIf="reservations.length > 0; else noReservations">
+      <li *ngFor="let reservation of reservations">
+        <strong>{{ reservation.type }}</strong> - {{ reservation.date }} {{ reservation.startTime }} - {{ reservation.endTime }}
+      </li>
+    </ul>
+    <ng-template #noReservations>
+      <p>Nie masz żadnych rezerwacji.</p>
+    </ng-template>
+  </div>
+  

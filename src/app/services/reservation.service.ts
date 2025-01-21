@@ -9,7 +9,9 @@ import { Reservation } from '../reservation/models/reservation';
 })
 export class ReservationService {
   private baseUrl = 'https://localhost:7194/api/Reservations';
+  private userUrl = 'https://localhost:7194/api/User';
   private reservations$: BehaviorSubject<Reservation[]> = new BehaviorSubject<Reservation[]>([]);
+  private userReservations$: BehaviorSubject<Reservation[]> = new BehaviorSubject<Reservation[]>([]);
   public reservationsUpdated: EventEmitter<void> = new EventEmitter<void>();
 
   constructor(private http: HttpClient) {}
@@ -22,9 +24,20 @@ export class ReservationService {
     });
   }
 
+  loadUsersReservations(): void {
+    this.http.get<Reservation[]>(`${this.userUrl}/${localStorage.getItem("userId")}/Reservations`).subscribe((userReservations) => {
+      this.userReservations$.next(userReservations);
+      this.reservationsUpdated.emit();
+    });
+  }
+
   // Pobierz obserwowalne rezerwacje
   getReservations(): Observable<Reservation[]> {
     return this.reservations$.asObservable();
+  }
+
+  getUserReservations(): Observable<Reservation[]> {
+    return this.userReservations$.asObservable();
   }
 
   // Pobierz rezerwację po ID
@@ -63,7 +76,7 @@ export class ReservationService {
 
   // Pobierz rezerwacje oczekujące (nieopłacone)
   getPendingReservations(): Observable<Reservation[]> {
-    return this.getReservations().pipe(
+    return this.getUserReservations().pipe(
       map((reservations) => reservations.filter((res) => !res.isReserved))
     );
   }
@@ -122,7 +135,7 @@ export class ReservationService {
       details: reservation.details,
       isCanceled: reservation.isCanceled,
       isReserved: reservation.isReserved,
-      userId: 1, // TODO: Ustawienie dynamicznego ID użytkownika
+      userId: localStorage.getItem("userId")
     };
   }
 }

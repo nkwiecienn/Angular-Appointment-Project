@@ -1,0 +1,14 @@
+.user-reservations {
+    border-top: 1px solid #ccc;
+    padding-top: 15px;
+  }
+  
+  .user-reservations ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .user-reservations li {
+    margin-bottom: 10px;
+  }
+  

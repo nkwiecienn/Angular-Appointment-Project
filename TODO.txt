@@ -1,4 +1,3 @@
-1. role: lekarz może tylko wejść na obecność/absencje; użytkownik ma koszyk i może rezerwować
 2. rezerwowanie tylko swoich rezerwacji
 3. dodać moje rezerwacje
 4. jak najeżdża się na timeslot to są dane z rezerwacji
