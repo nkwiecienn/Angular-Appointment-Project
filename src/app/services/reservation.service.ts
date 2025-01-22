@@ -70,6 +70,7 @@ export class ReservationService {
     return this.http.delete<void>(`${this.baseUrl}/${id}`).pipe(
       map(() => {
         this.loadReservations(); // Odśwież listę rezerwacji
+        this.loadUsersReservations(); // Odśwież listę rezerwacji
       })
     );
   }
