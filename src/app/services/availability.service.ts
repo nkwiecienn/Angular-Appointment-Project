@@ -25,6 +25,10 @@ export class AvailabilityService {
     return this.userAvailabilities$.asObservable();
   }
 
+  getDoctorAvailabilities(userId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.userUrl}/${userId}/Availabilities`);
+  }  
+
   // Pobierz wszystkie dostępności
   getAvailabilities(): Observable<Availability[]> {
     return this.http.get<Availability[]>(`${this.baseUrl}`);

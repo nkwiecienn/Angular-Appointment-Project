@@ -4,6 +4,16 @@
 
   <h2 class="text-center">Kalendarz Rezerwacji</h2>
 
+  <div class="doctor-selector">
+    <label for="doctor-select">Wybierz lekarza:</label>
+    <select id="doctor-select" [(ngModel)]="selectedDoctorId" (change)="onDoctorChange()">
+      <option *ngFor="let doctor of doctors" [value]="doctor.id">
+        {{ doctor.firstName }} {{ doctor.lastName }}
+      </option>
+    </select>
+  </div>
+  
+
   <div class="d-flex justify-content-between">
     <!-- Przewijanie tygodni -->
     <button class="btn btn-outline-primary ms-3" (click)="goToPreviousWeek()">← Poprzedni tydzień</button>

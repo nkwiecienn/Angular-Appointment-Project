@@ -23,6 +23,10 @@ export class AbsenceService {
     return this.userAbsences$.asObservable();
   }
 
+  getDoctorAbsences(userId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.userUrl}/${userId}/Absences`);
+  }  
+
   // Pobierz wszystkie absencje
   getAbsences(): Observable<Absence[]> {
     return this.http.get<Absence[]>(`${this.baseUrl}`);

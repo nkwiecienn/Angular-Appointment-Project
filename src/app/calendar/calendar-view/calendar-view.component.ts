@@ -13,10 +13,12 @@ import { Reservation } from '../../reservation/models/reservation';
 import { TimeSlot } from '../models/time-slot';
 import { ReservationComponent } from '../../reservation/reservation.component';
 import { RoleService } from '../../services/role.service';
+import { UserService } from '../../services/user.service';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   standalone: true,
-  imports: [CommonModule, RouterModule, CalendarSlotBlockComponent, ReservationComponent],
+  imports: [CommonModule, RouterModule, CalendarSlotBlockComponent, ReservationComponent, FormsModule],
   selector: 'app-calendar-view',
   templateUrl: './calendar-view.component.html',
   styleUrls: ['./calendar-view.component.css']
@@ -32,39 +34,61 @@ export class CalendarViewComponent implements OnInit {
   slotLength = 30;
   slotIndexes: number[] = [];
   todayStr = '';
+  doctors: any[] = [];
+  selectedDoctorId: number | null = null;
 
   constructor(
     private slotService: SlotService,
     private reservationService: ReservationService,
     private absenceService: AbsenceService,
     private availabilityService: AvailabilityService,
-    public roleService: RoleService
+    public roleService: RoleService,
+    private userService: UserService
   ) {}
 
   ngOnInit(): void {
     this.todayStr = new Date().toISOString().split('T')[0];
     this.startOfWeek = getMondayOf(new Date());
     this.reservationService.loadReservations(); 
+    this.loadDoctors();
 
     // Pobierz dane wymagane do generowania kalendarza
     this.loadData();
   }
 
-  private loadData(): void {
-    this.absenceService.getAbsences().subscribe((absences) => {
-      this.absences = absences;
-      this.loadWeekData();
+  loadDoctors(): void {
+    this.userService.getDoctors().subscribe((doctors) => {
+      this.doctors = doctors;
     });
+  }
 
-    this.availabilityService.getAvailabilities().subscribe((availabilities) => {
-      this.allAvailabilities = availabilities;
-      this.loadWeekData();
-    });
+  private loadData(): void {
+    // this.absenceService.getAbsences().subscribe((absences) => {
+    //   this.absences = absences;
+    //   this.loadWeekData();
+    // });
+
+    // this.availabilityService.getAvailabilities().subscribe((availabilities) => {
+    //   this.allAvailabilities = availabilities;
+    //   this.loadWeekData();
+    // });
+    if (this.selectedDoctorId) {
+      this.absenceService.getDoctorAbsences(this.selectedDoctorId).subscribe((absences) => {
+        this.absences = absences;
+      });
+      this.availabilityService.getDoctorAvailabilities(this.selectedDoctorId).subscribe((availabilities) => {
+        this.allAvailabilities = availabilities;
+      });
+    }
 
     this.reservationService.getReservations().subscribe((reservations) => {
       this.reservations = reservations;
       this.loadWeekData();
     });
+  }
+
+  onDoctorChange(): void {
+    this.loadData();
   }
 
   private loadWeekData(): void {
