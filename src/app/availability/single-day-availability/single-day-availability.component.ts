@@ -49,7 +49,7 @@ export class SingleDayAvailabilityComponent {
         type: 'single-day',
         day: this.form.value.day,
         timeRanges: this.form.value.timeRanges,
-        userId: 1 // Konwersja UserId na liczbę
+        userId: Number(localStorage.getItem("userId")) || 0 // Konwersja UserId na liczbę
       };
   
       this.availabilityService.addAvailability(newAvailability).subscribe(() => {

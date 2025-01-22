@@ -38,7 +38,7 @@ export class AbsenceComponent implements OnInit {
     if (this.form.valid) {
       const newAbsence = {
         day: this.form.value.day,
-        userId: 1, // ID użytkownika można dynamicznie pobierać z kontekstu (np. zalogowanego użytkownika)
+        userId: Number(localStorage.getItem("userId")), // ID użytkownika można dynamicznie pobierać z kontekstu (np. zalogowanego użytkownika)
       };
       this.absenceService.addAbsence(newAbsence).subscribe(() => {
         this.loadAbsences(); // Odśwież listę po dodaniu

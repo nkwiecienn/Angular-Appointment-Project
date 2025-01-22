@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core';
+import { EventEmitter, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { Availability } from '../availability/models/availability';
 
 @Injectable({
@@ -8,8 +8,22 @@ import { Availability } from '../availability/models/availability';
 })
 export class AvailabilityService {
   private baseUrl = 'https://localhost:7194/api/Availability'; // URL backendu
+  private userUrl = 'https://localhost:7194/api/User';
+  private userAvailabilities$ = new BehaviorSubject<Availability[]>([]);
+  public availabilitiesUpdated = new EventEmitter<void>();
 
   constructor(private http: HttpClient) {}
+
+  loadUsersAvailabilities(): void {
+    this.http.get<Availability[]>(`${this.userUrl}/${localStorage.getItem("userId")}/Availabilities`).subscribe((userAvailabilities) => {
+      this.userAvailabilities$.next(userAvailabilities);
+      this.availabilitiesUpdated.emit();
+    });
+  }
+
+  getUserAvailabilities(): Observable<Availability[]> {
+    return this.userAvailabilities$.asObservable();
+  }
 
   // Pobierz wszystkie dostępności
   getAvailabilities(): Observable<Availability[]> {

@@ -18,7 +18,7 @@ import { Observable } from 'rxjs';
   styleUrls: ['./availability-home.component.css'],
 })
 export class AvailabilityHomeComponent implements OnInit {
-  availabilities$!: Observable<Availability[]>; // Modyfikator '!' mówi TypeScriptowi, że właściwość zostanie zainicjowana później
+  availabilities$!: Observable<Availability[]>;
 
   constructor(private availabilityService: AvailabilityService) {}
 

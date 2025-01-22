@@ -86,7 +86,7 @@ export class RangeAvailabilityComponent {
         dateTo: this.form.value.dateTo,
         daysOfWeek: selectedDays, // Dodanie null, jeśli brak wybranych dni
         timeRanges: this.form.value.timeRanges,
-        userId: 1 // Konwersja UserId na liczbę
+        userId: Number(localStorage.getItem("userId")) || 0 // Konwersja UserId na liczbę
       };
   
       // Wysłanie danych do serwisu

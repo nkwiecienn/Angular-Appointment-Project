@@ -97,6 +97,8 @@ export class ReservationService {
       }),
       map(() => {
         this.loadReservations(); // Odświeżamy listę rezerwacji
+        this.loadReservations(); // Odświeżamy listę rezerwacji
+
       }),
       catchError((error) => {
         console.error('Błąd podczas rezerwacji:', error);
