@@ -29,7 +29,7 @@
   <hr>
   <h3>Zdefiniowane dostępności:</h3>
   <ul class="list-group">
-    <li class="list-group-item" *ngFor="let availability of (availabilities$ | async)">
+    <li class="list-group-item" *ngFor="let availability of (userAvailabilities$ | async)">
       <strong>ID:</strong> {{ availability.id }} <br>
       <strong>Typ:</strong> {{ availability.type }} <br>
 

@@ -19,8 +19,12 @@ import { Observable } from 'rxjs';
 })
 export class AvailabilityHomeComponent implements OnInit {
   availabilities$!: Observable<Availability[]>;
+  userAvailabilities$!: Observable<Availability[]>;
 
-  constructor(private availabilityService: AvailabilityService) {}
+  constructor(private availabilityService: AvailabilityService) {
+    this.availabilities$ = new Observable<Availability[]>();
+    this.userAvailabilities$ = new Observable<Availability[]>();
+  }
 
   ngOnInit(): void {
     this.loadAvailabilities();
@@ -28,6 +32,8 @@ export class AvailabilityHomeComponent implements OnInit {
 
   loadAvailabilities(): void {
     this.availabilities$ = this.availabilityService.getAvailabilities();
+    this.availabilityService.loadUsersAvailabilities();
+    this.userAvailabilities$ = this.availabilityService.getUserAvailabilities();
   }
 
   onAvailabilityAdded(): void {

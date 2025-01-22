@@ -22,7 +22,7 @@ export class RangeAvailabilityComponent {
     { label: 'Czwartek', value: 4 },
     { label: 'Piątek', value: 5 },
     { label: 'Sobota', value: 6 },
-    { label: 'Niedziela', value: 0 },
+    { label: 'Niedziela', value: 7 },
   ];
 
   constructor(private fb: FormBuilder, private availabilityService: AvailabilityService) {
