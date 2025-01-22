@@ -1,19 +1,17 @@
-/* Gdy kolumna jest bieżącym dniem */
 .current-day {
-    background-color: #fef1d8; /* jasne tło */
+    background-color: #fef1d8;
   }
   
-  /* Gdy wiersz jest bieżącą godziną */
   .current-time {
-    outline: 2px dashed red; /* czerwona ramka wokół tego wiersza w danej kolumnie */
+    outline: 2px dashed red;
   }
   
   .available {
-    background-color: #d4edda; /* zielone tło */
+    background-color: #d4edda;
   }
 
   .absent {
-    background-color: #f8d7da !important; /* czerwone tło */
+    background-color: #f8d7da !important;
   }
 
   .reservation-form-overlay {
@@ -22,7 +20,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); /* Rozmyte tło */
+    background-color: rgba(0, 0, 0, 0.5);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -41,8 +39,8 @@
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    width: 60%; /* Szerokość na 80% ekranu */
-    max-width: 400px; /* Maksymalna szerokość formularza */
-    min-width: 300px; /* Minimalna szerokość formularza */
+    width: 60%;
+    max-width: 400px;
+    min-width: 300px;
   }
   
