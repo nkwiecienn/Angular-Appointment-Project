@@ -1,6 +1,5 @@
 5. możliwośc wyboru lekarza
 7. po dodaniu absencji jeżeli jest tam rezerwacja to jest ona zmieniana na odwołaną
 8. wyświetlanie jakoś ładniej
-9. po usunięciu z koszyka się odświeża
 10. tworzenie tylko swoich absencji
 11. tworzenie tylko swoich rezerwacji

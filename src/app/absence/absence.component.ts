@@ -16,12 +16,14 @@ import { Observable } from 'rxjs';
 export class AbsenceComponent implements OnInit {
   form: FormGroup;
   absences$: Observable<Absence[]>;
+  userAbsences$: Observable<Absence[]>;
 
   constructor(private fb: FormBuilder, private absenceService: AbsenceService) {
     this.form = this.fb.group({
       day: ['', Validators.required],
     });
     this.absences$ = new Observable<Absence[]>();
+    this.userAbsences$ = new Observable<Absence[]>();
   }
 
   ngOnInit(): void {
@@ -31,6 +33,8 @@ export class AbsenceComponent implements OnInit {
   // Pobierz wszystkie absencje
   loadAbsences(): void {
     this.absences$ = this.absenceService.getAbsences();
+    this.absenceService.loadUserAbsences();
+    this.userAbsences$ = this.absenceService.getUserAbsences();
   }
 
   // Zapisz nową absencję

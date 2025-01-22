@@ -10,7 +10,7 @@
 
 <h3>Obecne absencje:</h3>
 <ul class="list-group">
-  <li class="list-group-item d-flex justify-content-between align-items-center" *ngFor="let absence of (absences$ | async)">
+  <li class="list-group-item d-flex justify-content-between align-items-center" *ngFor="let absence of (userAbsences$ | async)">
     {{ absence.day }}
     <button class="btn btn-danger btn-sm" (click)="deleteAbsence(absence.id)">Usuń</button>
   </li>
