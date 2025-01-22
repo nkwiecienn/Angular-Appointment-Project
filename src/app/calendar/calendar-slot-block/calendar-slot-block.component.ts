@@ -38,15 +38,11 @@ export class CalendarSlotBlockComponent implements OnInit {
     }
   }
 
-  // onMouseEnter(): void {
-  //   if (this.slot.isReserved) {
-  //     this.showTooltip = true;
-  //   }
-  // }
-
   onMouseEnter() {
     if (this.slot.isReserved && this.slot.reservationId) {
-      this.showTooltip = true;
+      if (!this.reservationDetails?.isCanceled) {
+        this.showTooltip = true;
+      }
 
       // Pobierz szczegóły rezerwacji, w tym UserName
       this.reservationService.getReservationById(this.slot.reservationId).subscribe({
@@ -71,6 +67,10 @@ export class CalendarSlotBlockComponent implements OnInit {
 
     if (this.slot.isPast && this.slot.isReserved) {
       return 'past-block';
+    }
+
+    if (this.slot.isReserved && this.reservationDetails?.isCanceled) {
+      return `canceled`;
     }
 
     if (this.slot.isReserved && this.reservationDetails?.isReserved) {

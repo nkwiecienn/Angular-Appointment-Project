@@ -46,6 +46,11 @@
   color: #666;
 }
 
+.canceled {
+  background-color: #f44336;
+  color: #fff;
+}
+
 /* tooltip */
 .slot-tooltip {
   position: absolute;

@@ -18,11 +18,18 @@
     <ul *ngIf="reservations.length > 0; else noReservations">
       <li *ngFor="let reservation of reservations">
         <strong>{{ reservation.type }}</strong> - {{ reservation.date }} {{ reservation.startTime }} - {{ reservation.endTime }}
-        <span class="badge" [ngClass]="{'bg-success': reservation.isReserved, 'bg-danger': reservation.isCanceled, 'bg-secondary': !reservation.isReserved && !reservation.isCanceled}">
-          {{ reservation.isReserved ? 'Zarezerwowane' : reservation.isCanceled ? 'Odwołane' : 'Oczekujące' }}
+        <span class="badge" [ngClass]="{
+            'bg-success': reservation.isReserved && !reservation.isCanceled,
+            'bg-danger': reservation.isCanceled,
+            'bg-secondary': !reservation.isReserved && !reservation.isCanceled
+          }">
+          {{ reservation.isCanceled ? 'Odwołane' : reservation.isReserved ? 'Zarezerwowane' : 'Oczekujące' }}
         </span>
+        <button *ngIf="!reservation.isCanceled && reservation.isReserved" class="btn btn-danger btn-sm ms-2" (click)="cancelReservation(reservation.id)">
+          Anuluj
+        </button>
       </li>
-    </ul>
+    </ul> 
     <ng-template #noReservations>
       <p>Nie masz żadnych rezerwacji.</p>
     </ng-template>

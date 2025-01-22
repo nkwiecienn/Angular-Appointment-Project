@@ -36,4 +36,26 @@ export class UserReservationsComponent implements OnInit {
       this.error = 'Nie znaleziono zalogowanego użytkownika.';
     }
   }
+
+  cancelReservation(reservationId: number): void {
+    if (confirm('Czy na pewno chcesz anulować tę rezerwację?')) {
+      this.reservationService.cancelReservation(reservationId).subscribe({
+        next: () => {
+          alert('Rezerwacja została anulowana.');
+          // Aktualizuj status rezerwacji lokalnie, bez potrzeby ponownego ładowania
+          const reservation = this.reservations.find(res => res.id === reservationId);
+          if (reservation) {
+            reservation.isCanceled = true;
+            reservation.isReserved = false; // Dodatkowe zabezpieczenie
+          }
+        },
+        error: (err) => {
+          console.error('Błąd podczas anulowania rezerwacji:', err);
+          alert('Nie udało się anulować rezerwacji.');
+        },
+      });
+    }
+  }
+  
+  
 }

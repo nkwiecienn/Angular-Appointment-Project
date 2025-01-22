@@ -1,5 +1,3 @@
-4. jak najeżdża się na timeslot to są dane z rezerwacji
 5. możliwośc wyboru lekarza
-6. jak kliknie się to można anulować
 7. po dodaniu absencji jeżeli jest tam rezerwacja to jest ona zmieniana na odwołaną
 8. wyświetlanie jakoś ładniej

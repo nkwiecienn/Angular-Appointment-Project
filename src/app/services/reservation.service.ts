@@ -74,6 +74,10 @@ export class ReservationService {
     );
   }
 
+  cancelReservation(id: number): Observable<void> {
+    return this.http.put<void>(`${this.baseUrl}/${id}/cancel`, {});
+  }
+
   // Pobierz rezerwacje oczekujące (nieopłacone)
   getPendingReservations(): Observable<Reservation[]> {
     return this.getUserReservations().pipe(
