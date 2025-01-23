@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { TimeSlot } from '../models/time-slot';
 import { ReservationService } from '../../services/reservation.service';
 import { Reservation } from '../../reservation/models/reservation';
+import { RoleService } from '../../services/role.service';
 
 @Component({
   standalone: true,
@@ -17,7 +18,7 @@ export class CalendarSlotBlockComponent implements OnInit {
   showTooltip = false;
   reservationDetails: Reservation | null = null; // Szczegóły rezerwacji
 
-  constructor(private reservationService: ReservationService) {}
+  constructor(private reservationService: ReservationService, private roleService: RoleService) {}
 
   ngOnInit(): void {
     if (this.slot.isReserved && this.slot.reservationId) {
@@ -40,7 +41,7 @@ export class CalendarSlotBlockComponent implements OnInit {
 
   onMouseEnter() {
     if (this.slot.isReserved && this.slot.reservationId) {
-      if (!this.reservationDetails?.isCanceled) {
+      if (!this.reservationDetails?.isCanceled && this.roleService.isDoctor()) {
         this.showTooltip = true;
       }
 
