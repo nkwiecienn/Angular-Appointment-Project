@@ -14,6 +14,7 @@ import { Reservation } from './models/reservation';
 export class ReservationComponent {
   @Input() date!: string;
   @Input() startTime!: string;
+  @Input() doctorId!: number;
   @Input() validateSlots!: (length: number) => boolean; // Funkcja przekazywana z komponentu nadrzędnego
   @Output() close = new EventEmitter<void>();
 
@@ -48,6 +49,7 @@ export class ReservationComponent {
         details: this.form.value.details,
         isCanceled: false,
         isReserved: false,
+        doctorId: this.doctorId,
       };
 
       const length = this.form.get('length')?.value;

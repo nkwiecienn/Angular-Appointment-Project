@@ -35,7 +35,7 @@ export class CalendarViewComponent implements OnInit {
   slotIndexes: number[] = [];
   todayStr = '';
   doctors: any[] = [];
-  selectedDoctorId: number | null = null;
+  selectedDoctorId: number = 1;
 
   constructor(
     private slotService: SlotService,
@@ -49,8 +49,8 @@ export class CalendarViewComponent implements OnInit {
   ngOnInit(): void {
     this.todayStr = new Date().toISOString().split('T')[0];
     this.startOfWeek = getMondayOf(new Date());
-    this.reservationService.loadReservations(); 
     this.loadDoctors();
+    this.reservationService.loadDoctorReservations(this.selectedDoctorId); 
 
     // Pobierz dane wymagane do generowania kalendarza
     this.loadData();
@@ -79,12 +79,11 @@ export class CalendarViewComponent implements OnInit {
       this.availabilityService.getDoctorAvailabilities(this.selectedDoctorId).subscribe((availabilities) => {
         this.allAvailabilities = availabilities;
       });
+      this.reservationService.getDoctorReservations().subscribe((reservations) => {
+        this.reservations = reservations;
+        this.loadWeekData();
+      });
     }
-
-    this.reservationService.getReservations().subscribe((reservations) => {
-      this.reservations = reservations;
-      this.loadWeekData();
-    });
   }
 
   onDoctorChange(): void {

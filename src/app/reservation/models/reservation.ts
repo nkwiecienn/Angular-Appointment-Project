@@ -13,4 +13,5 @@ export interface Reservation {
     isCanceled: boolean;
     isReserved: boolean;
     userName?: string;
+    doctorId?: number;
 }

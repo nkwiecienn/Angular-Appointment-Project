@@ -12,6 +12,7 @@ export class ReservationService {
   private userUrl = 'https://localhost:7194/api/User';
   private reservations$: BehaviorSubject<Reservation[]> = new BehaviorSubject<Reservation[]>([]);
   private userReservations$: BehaviorSubject<Reservation[]> = new BehaviorSubject<Reservation[]>([]);
+  private doctorsReservations$: BehaviorSubject<Reservation[]> = new BehaviorSubject<Reservation[]>([]);
   public reservationsUpdated: EventEmitter<void> = new EventEmitter<void>();
 
   constructor(private http: HttpClient) {}
@@ -27,7 +28,14 @@ export class ReservationService {
   loadUsersReservations(): void {
     this.http.get<Reservation[]>(`${this.userUrl}/${localStorage.getItem("userId")}/Reservations`).subscribe((userReservations) => {
       this.userReservations$.next(userReservations);
-      this.reservationsUpdated.emit();
+      // this.reservationsUpdated.emit();
+    });
+  }
+
+  loadDoctorReservations(doctorId: number): void {
+    this.http.get<Reservation[]>(`${this.baseUrl}/doctor/${doctorId}`).subscribe((reservations) => {
+      this.doctorsReservations$.next(reservations);
+      // this.reservationsUpdated.emit();
     });
   }
 
@@ -38,6 +46,10 @@ export class ReservationService {
 
   getUserReservations(): Observable<Reservation[]> {
     return this.userReservations$.asObservable();
+  }
+
+  getDoctorReservations(): Observable<Reservation[]> {
+    return this.doctorsReservations$.asObservable();
   }
 
   // Pobierz rezerwację po ID
@@ -110,23 +122,23 @@ export class ReservationService {
   
 
   // Mapowanie DTO -> Model
-  private mapDtoToReservation(dto: any): Reservation {
-    return {
-      id: dto.id,
-      date: dto.date,
-      startTime: dto.startTime,
-      endTime: dto.endTime,
-      length: dto.length,
-      type: dto.type,
-      patientName: dto.patientName,
-      patientSurname: dto.patientSurname,
-      gender: dto.gender,
-      age: dto.age,
-      details: dto.details,
-      isCanceled: dto.isCanceled,
-      isReserved: dto.isReserved,
-    };
-  }
+  // private mapDtoToReservation(dto: any): Reservation {
+  //   return {
+  //     id: dto.id,
+  //     date: dto.date,
+  //     startTime: dto.startTime,
+  //     endTime: dto.endTime,
+  //     length: dto.length,
+  //     type: dto.type,
+  //     patientName: dto.patientName,
+  //     patientSurname: dto.patientSurname,
+  //     gender: dto.gender,
+  //     age: dto.age,
+  //     details: dto.details,
+  //     isCanceled: dto.isCanceled,
+  //     isReserved: dto.isReserved,
+  //   };
+  // }
 
   // Mapowanie Model -> DTO
   private mapReservationToDto(reservation: Reservation): any {
@@ -142,7 +154,8 @@ export class ReservationService {
       details: reservation.details,
       isCanceled: reservation.isCanceled,
       isReserved: reservation.isReserved,
-      userId: localStorage.getItem("userId")
+      doctorId: reservation.doctorId,
+      userId: localStorage.getItem("userId"),
     };
   }
 }
