@@ -1,11 +1,10 @@
-// src/app/services/calendar.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { WeekSchedule } from '../calendar/models/week-schedule';
 
 @Injectable({
-  providedIn: 'root' // standalone: 'root' => globalny zasięg
+  providedIn: 'root'
 })
 export class CalendarService {
 

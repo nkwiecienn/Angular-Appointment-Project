@@ -21,8 +21,7 @@ export class BasketPaymentComponent {
     if (this.blikCode.length === 6) {
       this.reservationService.reserveAllPendingReservations().subscribe({
         next: () => {
-          // alert('Płatność zakończona sukcesem!');
-          this.paymentCompleted.emit(); // Emituj zdarzenie po udanym procesie
+          this.paymentCompleted.emit();
         },
         error: (err) => {
           console.error('Błąd podczas płatności:', err);

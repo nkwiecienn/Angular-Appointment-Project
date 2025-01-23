@@ -30,7 +30,7 @@ export class BasketReservationsComponent implements OnInit {
 
   removeReservation(reservationId: number): void {
     this.reservationService.deleteReservation(reservationId).subscribe(() => {
-      this.loadPendingReservations(); // Odśwież dane po usunięciu
+      this.loadPendingReservations();
     });
   }
 }

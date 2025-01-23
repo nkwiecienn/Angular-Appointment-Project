@@ -39,14 +39,11 @@ export class AppComponent {
         this.clearSession();
       },
       error: () => {
-        this.clearSession(); // Wyczyść dane nawet jeśli żądanie zakończy się błędem
+        this.clearSession();
       },
     });
   }
 
-  /**
-   * Wyczyść dane sesji i przekieruj na stronę logowania
-   */
   private clearSession(): void {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');

@@ -10,8 +10,7 @@ export class UserService {
 
   constructor(private http: HttpClient) {}
 
-  // Pobierz listę użytkowników według roli
   getDoctors(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/role/2`); // role = 2 dla lekarzy
+    return this.http.get<any[]>(`${this.apiUrl}/role/2`);
   }
 }

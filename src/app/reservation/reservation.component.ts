@@ -15,7 +15,7 @@ export class ReservationComponent {
   @Input() date!: string;
   @Input() startTime!: string;
   @Input() doctorId!: number;
-  @Input() validateSlots!: (length: number) => boolean; // Funkcja przekazywana z komponentu nadrzędnego
+  @Input() validateSlots!: (length: number) => boolean;
   @Output() close = new EventEmitter<void>();
 
   form: FormGroup;
@@ -36,7 +36,7 @@ export class ReservationComponent {
   save(): void {
     if (this.form.valid) {
       const newReservation: Reservation = {
-        id: 0, // Automatycznie ustawiane w backendzie
+        id: 0,
         date: this.date,
         startTime: this.startTime,
         endTime: this.calculateEndTime(this.startTime, this.form.value.length),
@@ -54,7 +54,6 @@ export class ReservationComponent {
 
       const length = this.form.get('length')?.value;
 
-      // Sprawdzenie dostępności slotów
       if (this.validateSlots(length)) {
         this.reservationService.addReservation(newReservation).subscribe({
           next: (response) => {
@@ -68,7 +67,7 @@ export class ReservationComponent {
           },
         });
       } else {
-        this.slotsAvailable = false; // Zmień stan flagi walidacji
+        this.slotsAvailable = false;
         alert('Nie wszystkie wymagane sloty są dostępne.');
       }
     }

@@ -8,7 +8,7 @@ import { Availability } from '../models/availability';
 @Component({
   standalone: true,
   selector: 'app-single-day-availability',
-  imports: [CommonModule, ReactiveFormsModule], // standalone
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './single-day-availability.component.html',
 })
 export class SingleDayAvailabilityComponent {
@@ -49,12 +49,12 @@ export class SingleDayAvailabilityComponent {
         type: 'single-day',
         day: this.form.value.day,
         timeRanges: this.form.value.timeRanges,
-        userId: Number(localStorage.getItem("userId")) || 0 // Konwersja UserId na liczbę
+        userId: Number(localStorage.getItem("userId")) || 0
       };
   
       this.availabilityService.addAvailability(newAvailability).subscribe(() => {
         alert('Zapisano dostępność (jednodniową).');
-        this.availabilityAdded.emit(); // Powiadomienie o dodaniu dostępności
+        this.availabilityAdded.emit(); 
       });
     }
   }  

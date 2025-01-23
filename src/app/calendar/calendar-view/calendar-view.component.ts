@@ -61,7 +61,6 @@ export class CalendarViewComponent implements OnInit {
     this.loadDoctors();
     this.reservationService.loadDoctorReservations(this.selectedDoctorId); 
 
-    // Pobierz dane wymagane do generowania kalendarza
     this.loadData();
   }
 
@@ -72,15 +71,6 @@ export class CalendarViewComponent implements OnInit {
   }
 
   private loadData(): void {
-    // this.absenceService.getAbsences().subscribe((absences) => {
-    //   this.absences = absences;
-    //   this.loadWeekData();
-    // });
-
-    // this.availabilityService.getAvailabilities().subscribe((availabilities) => {
-    //   this.allAvailabilities = availabilities;
-    //   this.loadWeekData();
-    // });
     if (this.selectedDoctorId) {
       this.absenceService.getDoctorAbsences(this.selectedDoctorId).subscribe((absences) => {
         this.absences = absences;
@@ -105,7 +95,6 @@ export class CalendarViewComponent implements OnInit {
     const totalSlots = (this.numHours * 60) / this.slotLength; 
     this.slotIndexes = Array.from({ length: totalSlots }, (_, i) => i);
 
-    // Generuj dane dla każdego dnia tygodnia
     this.weekDays = generateWeekDays(this.startOfWeek, []).map((day) => {
       const dailyReservations = this.reservations.filter((res) => res.date === day.date);
       const slots = this.slotService.generateSlotsForDay(

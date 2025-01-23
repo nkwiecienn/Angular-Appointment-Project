@@ -7,7 +7,7 @@ import { Absence } from '../absence/models/absence';
   providedIn: 'root',
 })
 export class AbsenceService {
-  private baseUrl = 'https://localhost:7194/api/Absence'; // Adres API backendu
+  private baseUrl = 'https://localhost:7194/api/Absence';
   private userUrl = 'https://localhost:7194/api/User';
   private userAbsences$: BehaviorSubject<Absence[]> = new BehaviorSubject<Absence[]>([]);
 
@@ -27,17 +27,14 @@ export class AbsenceService {
     return this.http.get<any[]>(`${this.userUrl}/${userId}/Absences`);
   }  
 
-  // Pobierz wszystkie absencje
   getAbsences(): Observable<Absence[]> {
     return this.http.get<Absence[]>(`${this.baseUrl}`);
   }
 
-  // Dodaj nową absencję
   addAbsence(newAbsence: { day: string; userId: number }): Observable<Absence> {
     return this.http.post<Absence>(`${this.baseUrl}`, newAbsence);
   }
 
-  // Usuń absencję
   deleteAbsence(absenceId: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/${absenceId}`);
   }

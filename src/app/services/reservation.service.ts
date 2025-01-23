@@ -17,7 +17,6 @@ export class ReservationService {
 
   constructor(private http: HttpClient) {}
 
-  // Pobierz wszystkie rezerwacje
   loadReservations(): void {
     this.http.get<Reservation[]>(this.baseUrl).subscribe((reservations) => {
       this.reservations$.next(reservations);
@@ -28,18 +27,15 @@ export class ReservationService {
   loadUsersReservations(): void {
     this.http.get<Reservation[]>(`${this.userUrl}/${localStorage.getItem("userId")}/Reservations`).subscribe((userReservations) => {
       this.userReservations$.next(userReservations);
-      // this.reservationsUpdated.emit();
     });
   }
 
   loadDoctorReservations(doctorId: number): void {
     this.http.get<Reservation[]>(`${this.baseUrl}/doctor/${doctorId}`).subscribe((reservations) => {
       this.doctorsReservations$.next(reservations);
-      // this.reservationsUpdated.emit();
     });
   }
 
-  // Pobierz obserwowalne rezerwacje
   getReservations(): Observable<Reservation[]> {
     return this.reservations$.asObservable();
   }
@@ -52,37 +48,33 @@ export class ReservationService {
     return this.doctorsReservations$.asObservable();
   }
 
-  // Pobierz rezerwację po ID
   getReservationById(id: number): Observable<Reservation> {
     return this.http.get<Reservation>(`${this.baseUrl}/${id}`);
   }
 
-  // Dodaj nową rezerwację
   addReservation(newReservation: Reservation): Observable<Reservation> {
     const dto = this.mapReservationToDto(newReservation);
     return this.http.post<Reservation>(this.baseUrl, dto).pipe(
       map((createdReservation) => {
-        this.loadReservations(); // Odśwież listę rezerwacji
+        this.loadReservations();
         return createdReservation;
       })
     );
   }
 
-  // Zaktualizuj istniejącą rezerwację
   updateReservation(id: number, updatedReservation: Partial<Reservation>): Observable<void> {
     return this.http.put<void>(`${this.baseUrl}/${id}`, updatedReservation).pipe(
       map(() => {
-        this.loadReservations(); // Odśwież listę rezerwacji
+        this.loadReservations();
       })
     );
   }
 
-  // Usuń rezerwację
   deleteReservation(id: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/${id}`).pipe(
       map(() => {
-        this.loadReservations(); // Odśwież listę rezerwacji
-        this.loadUsersReservations(); // Odśwież listę rezerwacji
+        this.loadReservations();
+        this.loadUsersReservations();
       })
     );
   }
@@ -91,7 +83,6 @@ export class ReservationService {
     return this.http.put<void>(`${this.baseUrl}/${id}/cancel`, {});
   }
 
-  // Pobierz rezerwacje oczekujące (nieopłacone)
   getPendingReservations(): Observable<Reservation[]> {
     return this.getUserReservations().pipe(
       map((reservations) => reservations.filter((res) => !res.isReserved))
@@ -101,16 +92,15 @@ export class ReservationService {
   reserveAllPendingReservations(): Observable<void> {
     return this.getPendingReservations().pipe(
       switchMap((pendingReservations) => {
-        // Dla każdej rezerwacji aktualizujemy isReserved na true
         const updateRequests = pendingReservations.map((reservation) =>
           this.updateReservation(reservation.id, { isReserved: true })
         );
   
-        return forkJoin(updateRequests); // Uruchamiamy wszystkie żądania równolegle
+        return forkJoin(updateRequests);
       }),
       map(() => {
-        this.loadReservations(); // Odświeżamy listę rezerwacji
-        this.loadReservations(); // Odświeżamy listę rezerwacji
+        this.loadReservations();
+        this.loadReservations();
 
       }),
       catchError((error) => {
@@ -120,27 +110,6 @@ export class ReservationService {
     );
   }
   
-
-  // Mapowanie DTO -> Model
-  // private mapDtoToReservation(dto: any): Reservation {
-  //   return {
-  //     id: dto.id,
-  //     date: dto.date,
-  //     startTime: dto.startTime,
-  //     endTime: dto.endTime,
-  //     length: dto.length,
-  //     type: dto.type,
-  //     patientName: dto.patientName,
-  //     patientSurname: dto.patientSurname,
-  //     gender: dto.gender,
-  //     age: dto.age,
-  //     details: dto.details,
-  //     isCanceled: dto.isCanceled,
-  //     isReserved: dto.isReserved,
-  //   };
-  // }
-
-  // Mapowanie Model -> DTO
   private mapReservationToDto(reservation: Reservation): any {
     return {
       id: reservation.id,

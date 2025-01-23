@@ -15,7 +15,7 @@ export class CalendarSlotBlockComponent implements OnInit {
   @Input() slot!: TimeSlot;
 
   showTooltip = false;
-  reservationDetails: Reservation | null = null; // Szczegóły rezerwacji
+  reservationDetails: Reservation | null = null;
 
   constructor(private reservationService: ReservationService) {}
 
@@ -44,7 +44,6 @@ export class CalendarSlotBlockComponent implements OnInit {
         this.showTooltip = true;
       }
 
-      // Pobierz szczegóły rezerwacji, w tym UserName
       this.reservationService.getReservationById(this.slot.reservationId).subscribe({
         next: (reservation) => {
           this.reservationDetails = reservation;

@@ -30,31 +30,28 @@ export class AbsenceComponent implements OnInit {
     this.loadAbsences();
   }
 
-  // Pobierz wszystkie absencje
   loadAbsences(): void {
     this.absences$ = this.absenceService.getAbsences();
     this.absenceService.loadUserAbsences();
     this.userAbsences$ = this.absenceService.getUserAbsences();
   }
 
-  // Zapisz nową absencję
   save(): void {
     if (this.form.valid) {
       const newAbsence = {
         day: this.form.value.day,
-        userId: Number(localStorage.getItem("userId")), // ID użytkownika można dynamicznie pobierać z kontekstu (np. zalogowanego użytkownika)
+        userId: Number(localStorage.getItem("userId")),
       };
       this.absenceService.addAbsence(newAbsence).subscribe(() => {
-        this.loadAbsences(); // Odśwież listę po dodaniu
+        this.loadAbsences();
         this.form.reset();
       });
     }
   }
 
-  // Usuń absencję
   deleteAbsence(absenceId: number): void {
     this.absenceService.deleteAbsence(absenceId).subscribe(() => {
-      this.loadAbsences(); // Odśwież listę po usunięciu
+      this.loadAbsences();
     });
   }
 }

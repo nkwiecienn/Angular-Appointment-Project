@@ -42,11 +42,10 @@ export class UserReservationsComponent implements OnInit {
       this.reservationService.cancelReservation(reservationId).subscribe({
         next: () => {
           alert('Rezerwacja została anulowana.');
-          // Aktualizuj status rezerwacji lokalnie, bez potrzeby ponownego ładowania
           const reservation = this.reservations.find(res => res.id === reservationId);
           if (reservation) {
             reservation.isCanceled = true;
-            reservation.isReserved = false; // Dodatkowe zabezpieczenie
+            reservation.isReserved = false;
           }
         },
         error: (err) => {

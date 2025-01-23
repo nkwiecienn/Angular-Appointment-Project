@@ -14,14 +14,11 @@ export class RoleGuard implements CanActivate {
 
   canActivate(route: ActivatedRouteSnapshot): boolean {
     if (isPlatformBrowser(this.platformId)) {
-      // Pobierz rolę z localStorage
       const userRole = Number(localStorage.getItem('role'));
       
-      // Pobierz dozwolone role z konfiguracji routingu
       const allowedRoles = route.data['allowedRoles'] as number[];
 
       if (!userRole || !allowedRoles.includes(userRole)) {
-        // Możesz przekierować na stronę błędu lub dashboard
         this.router.navigate(['/calendar']);
         return false;
       }

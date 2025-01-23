@@ -1,4 +1,3 @@
-/* Standardowy styl dla slotów */
 .slot-block {
   position: relative;
   width: 100%;
@@ -9,38 +8,34 @@
   padding: 2px;
 }
 
-/* slot niezarezerwowany */
 .free-slot {
   background-color: #fafafa;
 }
 
-/* slot zarezerwowany, brak "type" */
 .reserved-default {
   background-color: yellow;
 }
 
-/* Kolory na podstawie typu */
 .reserved-konsultacja {
-  background-color: #4caf50; /* zielony */
+  background-color: #4caf50; 
 }
 
 .reserved-badanie {
-  background-color: #2196f3; /* niebieski */
+  background-color: #2196f3; 
 }
 
 .reserved-wizyta\ kontrolna {
-  background-color: #ff9800; /* pomarańczowy */
+  background-color: #ff9800;
 }
 
 .reserved-recepta {
-  background-color: #9c27b0; /* fioletowy */
+  background-color: #9c27b0;
 }
 
 .reserved-inny {
-  background-color: #607d8b; /* szary */
+  background-color: #607d8b;
 }
 
-/* slot z przeszłości */
 .past-block {
   background-color: #cfcfcf !important;
   color: #666;
@@ -51,7 +46,6 @@
   color: #fff;
 }
 
-/* tooltip */
 .slot-tooltip {
   position: absolute;
   top: 0;

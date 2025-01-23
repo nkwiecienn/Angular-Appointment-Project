@@ -68,33 +68,30 @@ export class RangeAvailabilityComponent {
 
   save() {
     if (this.form.valid) {
-      // Pobranie wybranych dni tygodnia
       const selectedDays: number[] = [];
       const daysControl = this.form.get('daysOfWeek') as FormArray;
   
       daysControl.controls.forEach((ctrl, i) => {
         if (ctrl.value) {
-          selectedDays.push(this.daysOfWeekOptions[i].value); // Dodanie wartości odpowiadającej dniowi tygodnia
+          selectedDays.push(this.daysOfWeekOptions[i].value);
         }
       });
   
-      // Tworzenie obiektu dostępności
       const newAvailability: Availability = {
         id: 0,
         type: 'range',
         dateFrom: this.form.value.dateFrom,
         dateTo: this.form.value.dateTo,
-        daysOfWeek: selectedDays, // Dodanie null, jeśli brak wybranych dni
+        daysOfWeek: selectedDays,
         timeRanges: this.form.value.timeRanges,
-        userId: Number(localStorage.getItem("userId")) || 0 // Konwersja UserId na liczbę
+        userId: Number(localStorage.getItem("userId")) || 0
       };
   
-      // Wysłanie danych do serwisu
       this.availabilityService.addAvailability(newAvailability).subscribe({
         next: () => {
           alert('Zapisano dostępność (zakres dat).');
-          this.availabilityAdded.emit(); // Powiadomienie o dodaniu dostępności
-          this.form.reset(); // Resetowanie formularza po zapisaniu
+          this.availabilityAdded.emit();
+          this.form.reset();
         },
         error: (err) => {
           console.error('Błąd podczas zapisywania dostępności:', err);

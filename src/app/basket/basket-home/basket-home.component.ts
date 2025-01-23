@@ -19,7 +19,7 @@ export class BasketHomeComponent implements OnInit {
   constructor(private reservationService: ReservationService) {}
 
   ngOnInit(): void {
-    this.reservationService.loadReservations(); // Odśwież dane
+    this.reservationService.loadReservations();
     this.reservationService.getPendingReservations().subscribe(pendingReservations => {
       this.hasPendingReservations = pendingReservations.length > 0;
     });
@@ -38,9 +38,9 @@ export class BasketHomeComponent implements OnInit {
   }
 
   onPaymentCompleted(): void {
-    this.showPayment = false; // Ukryj sekcję płatności
-    this.hasPendingReservations = false; // Resetuj flagę po zakończeniu płatności
-    this.reservationService.loadReservations(); // Odśwież rezerwacje
-    this.reservationService.loadUsersReservations(); // Odśwież rezerwacje użytkownika
+    this.showPayment = false;
+    this.hasPendingReservations = false; 
+    this.reservationService.loadReservations(); 
+    this.reservationService.loadUsersReservations(); 
   }
 }  

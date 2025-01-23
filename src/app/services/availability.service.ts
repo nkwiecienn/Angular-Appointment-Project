@@ -7,7 +7,7 @@ import { Availability } from '../availability/models/availability';
   providedIn: 'root',
 })
 export class AvailabilityService {
-  private baseUrl = 'https://localhost:7194/api/Availability'; // URL backendu
+  private baseUrl = 'https://localhost:7194/api/Availability';
   private userUrl = 'https://localhost:7194/api/User';
   private userAvailabilities$ = new BehaviorSubject<Availability[]>([]);
   public availabilitiesUpdated = new EventEmitter<void>();
@@ -29,22 +29,18 @@ export class AvailabilityService {
     return this.http.get<any[]>(`${this.userUrl}/${userId}/Availabilities`);
   }  
 
-  // Pobierz wszystkie dostępności
   getAvailabilities(): Observable<Availability[]> {
     return this.http.get<Availability[]>(`${this.baseUrl}`);
   }
 
-  // Dodaj nową dostępność
   addAvailability(availability: Availability): Observable<Availability> {
     return this.http.post<Availability>(`${this.baseUrl}`, availability);
   }
 
-  // Zaktualizuj istniejącą dostępność
   updateAvailability(id: number, availability: Availability): Observable<void> {
     return this.http.put<void>(`${this.baseUrl}/${id}`, availability);
   }
 
-  // Usuń dostępność
   deleteAvailability(id: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/${id}`);
   }
