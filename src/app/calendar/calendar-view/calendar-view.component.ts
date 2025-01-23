@@ -47,9 +47,14 @@ export class CalendarViewComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const savedDoctorId = localStorage.getItem('selectedDoctorId');
-    if (savedDoctorId) {
-      this.selectedDoctorId = +savedDoctorId;
+    if(this.roleService.isDoctor()) {
+      const doctorId = localStorage.getItem('userId');
+      this.selectedDoctorId = doctorId ? +doctorId : 1;
+    } else {
+      const savedDoctorId = localStorage.getItem('selectedDoctorId');
+      if (savedDoctorId) {
+        this.selectedDoctorId = +savedDoctorId;
+      }
     }
     this.todayStr = new Date().toISOString().split('T')[0];
     this.startOfWeek = getMondayOf(new Date());

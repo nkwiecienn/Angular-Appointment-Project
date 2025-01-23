@@ -1,5 +1,3 @@
-5. możliwośc wyboru lekarza:
-- lekarz może zobaczyć listę swoich wizyt
 7. po dodaniu absencji jeżeli jest tam rezerwacja to jest ona zmieniana na odwołaną
 8. wyświetlanie jakoś ładniej
 9. crazy rzeczy:

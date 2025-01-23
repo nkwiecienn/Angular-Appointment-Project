@@ -2,7 +2,7 @@
 
   <h2 class="text-center">Kalendarz Rezerwacji</h2>
 
-  <div class="doctor-selector mb-4 d-flex align-items-center">
+  <div class="doctor-selector mb-4 d-flex align-items-center" *ngIf="roleService.isPatient()">
     <label for="doctor-select" class="me-3">Wybierz lekarza:</label>
     <select id="doctor-select" class="form-select w-auto" [(ngModel)]="selectedDoctorId" (change)="onDoctorChange()">
       <option *ngFor="let doctor of doctors" [value]="doctor.id">
