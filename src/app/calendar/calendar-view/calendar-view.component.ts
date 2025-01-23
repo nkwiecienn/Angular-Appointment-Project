@@ -47,6 +47,10 @@ export class CalendarViewComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    const savedDoctorId = localStorage.getItem('selectedDoctorId');
+    if (savedDoctorId) {
+      this.selectedDoctorId = +savedDoctorId;
+    }
     this.todayStr = new Date().toISOString().split('T')[0];
     this.startOfWeek = getMondayOf(new Date());
     this.loadDoctors();
@@ -87,6 +91,8 @@ export class CalendarViewComponent implements OnInit {
   }
 
   onDoctorChange(): void {
+    localStorage.setItem('selectedDoctorId', this.selectedDoctorId.toString());
+    this.reservationService.loadDoctorReservations(this.selectedDoctorId);
     this.loadData();
   }
 
