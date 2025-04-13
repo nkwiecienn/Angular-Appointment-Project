@@ -1,7 +1,6 @@
 # PawProject
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.0.1. It is also the worst project I've ever done. I hate it. I despise it. I wanna drop out of uni because of it. If you're reading this I am probably dead. And if you're wondering if it was the reason. It certanly wwas. I can't even spell "ceirtanly" but I don't care anymore. If you've found the repository because you have to do the same project I am deeply sorry. Everything here is done wrong. Don't ever get inspired by it. Everyday I wake up crying because I have to do this project.
-
+This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.0.1. 
 ## Development server
 
 To start a local development server, run:
